@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "backend.h"
+#include "utils.h"
 #include "debug.h"
+
+// 思路1：跟踪块，执行跳转语句，分别记录跳转语句地址（caller），和跳转目标BBlock地址（callee）
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
 
@@ -39,7 +41,6 @@ static void plugin_init(const qemu_info_t *info)
 		info->target_name,
 		info->system.smp_vcpus,
 		info->system.max_vcpus);
-	// system("cat /proc/self/maps");
 
 	cpus_branches = g_array_sized_new(true, true, sizeof(uint64_t),
 		info->system_emulation ? info->system.max_vcpus : 1);
@@ -81,6 +82,8 @@ static bool resolve_inst_offset(uint64_t inst_addr, uint64_t *offset, char *imag
 	return false;
 }
 
+/* Qemu User只有一个VCPU
+*/
 static void vcpu_init(qemu_plugin_id_t id, unsigned int vcpu_index)
 {
 	g_rw_lock_writer_lock(&expand_array_lock);
@@ -140,8 +143,6 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 	uint64_t vaddr = qemu_plugin_tb_vaddr(tb);
 	uint64_t start_vaddr = qemu_plugin_tb_vaddr(tb);
 	size_t num_insns = qemu_plugin_tb_n_insns(tb);
-	char image_name[512] = {0};
-	uint64_t inst_offset = 0;
 
 	// DEBUG_LOG("TB: %p 0x%lx %ld insts\n", tb, vaddr, num_insns);
 
@@ -213,7 +214,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
 
 	if (argc < 1) {
 		printf("Usage: /path/to/qemu \\ \n"
-			"\t-plugin /path/to/libibr.so,output=\"output.csv\",backend=\"/path/to/disassembly/libbackend.so\" \\ \n"
+			"\t-plugin /path/to/libibr1.so,output=\"output.csv\",backend=\"/path/to/disassembly/libbackend.so\" \\ \n"
 			"\t$BINARY\n");
 		return -1;
 	}
