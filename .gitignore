@@ -1,2 +1,4 @@
 qemu
+capstone
 *.o
+*.so

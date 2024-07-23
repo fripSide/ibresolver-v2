@@ -7,6 +7,7 @@
 
 #include "utils.h"
 #include "debug.h"
+#include "cs_resolver.h"
 
 // 思路1：跟踪块，执行跳转语句，分别记录跳转语句地址（caller），和跳转目标BBlock地址（callee）
 
@@ -46,42 +47,6 @@ static void plugin_init(const qemu_info_t *info)
 		info->system_emulation ? info->system.max_vcpus : 1);
 }
 
-
-// read virtual addr from /proc/self/maps
-static bool resolve_inst_offset(uint64_t inst_addr, uint64_t *offset, char *image_name)
-{
-	FILE *maps = fopen("/proc/self/maps", "r");
-	if (!maps) {
-		perror("fopen");
-		return false;
-	}
-
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	while ((read = getline(&line, &len, maps)) != -1) {
-		uint64_t start, end;
-		uint64_t addr_off = 0;
-		char perms[5] = {0};
-		char dev[6] = {0};
-		int inode;
-		char pathname[512] = {0};
-		sscanf(line, "%lx-%lx %4s %lx %5s %d %s", &start, &end, perms, &addr_off, dev, &inode, pathname);
-		if (inst_addr >= start && inst_addr <= end) {
-			memcpy(image_name, pathname, strlen(pathname));
-			*offset = inst_addr - start + addr_off;
-			// printf("Found image: %s offset: %lx in\n", pathname, *offset);
-			// DEBUG_LOG("Found image: %s offset: %lx\n", pathname, *offset);
-			free(line);
-			fclose(maps);
-			return true;
-		}
-	}
-	free(line);
-	fclose(maps);
-	return false;
-}
-
 /* Qemu User只有一个VCPU
 */
 static void vcpu_init(qemu_plugin_id_t id, unsigned int vcpu_index)
@@ -105,14 +70,14 @@ static void check_and_record_ib(unsigned int cpu_index, void *udata)
 		uint64_t dest_inst_offset = 0;
 		char caller_image_name[512] = {0};
 		char dest_image_name[512] = {0};
-		bool res = resolve_inst_offset(branch_addr, &caller_inst_offset, caller_image_name);
+		bool res = covert_vaddr_to_offset(branch_addr, &caller_inst_offset, caller_image_name);
 		if (!res) {
 			DEBUG_LOG("Failed to resolve instruction offset: 0x%lx\n", branch_addr);
 			return;
 		}
 
 		uint64_t cur_insn_addr = (uint64_t) udata;
-		res = resolve_inst_offset(cur_insn_addr, &dest_inst_offset, dest_image_name);
+		res = covert_vaddr_to_offset(cur_insn_addr, &dest_inst_offset, dest_image_name);
 
 		if (!res) {
 			DEBUG_LOG("Failed to resolve instruction offset: 0x%lx\n", cur_insn_addr);

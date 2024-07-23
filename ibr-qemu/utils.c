@@ -2,41 +2,13 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <malloc.h>
+
 #include "debug.h"
+#include "cs_resolver.h"
 
 
-// convert to capstone arch
-enum arch_t {
-	arm32,
-	aarch64,
-	x86_64,
-	unknown,
-};
-
-static int current_arch = unknown;
-
-#ifdef USE_BINARY_NINJA
-
-#else
-
-bool support_arch(const char *arch)
-{
-	// DEBUG_LOG("Current Arch: %s\n", arch);
-	if (strcmp(arch, "arm") == 0) {
-		current_arch = arm32;
-		return true;
-	} else if (strcmp(arch, "aarch64") == 0) {
-		current_arch = aarch64;
-		return true;
-	} else if (strcmp(arch, "x86_64") == 0) {
-		current_arch = x86_64;
-		return true;
-	}
-	return false;
-}
-
-
-bool is_indirect_branch(uint8_t *insn_data, size_t insn_size) 
+static bool simple_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 {
 	if (current_arch == x86_64) {
 		// Handles callq rax, rcx, rdx, etc.
@@ -86,4 +58,45 @@ bool is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 	return false;
 }
 
-#endif
+/*  version-1，利用capstone直接反编译，然后string里面遍历寄存器?
+	version-2，解释执行这条指令
+*/
+bool is_indirect_branch(uint8_t *insn_data, size_t insn_size) 
+{
+	// return simple_is_indirect_branch(insn_data, insn_size);
+	return capstone_is_indirect_branch(insn_data, insn_size);
+}
+
+// read virtual addr from /proc/self/maps, convert vaddr to offset
+bool covert_vaddr_to_offset(uint64_t inst_vaddr, uint64_t *offset, char *image_name)
+{
+	FILE *maps = fopen("/proc/self/maps", "r");
+	if (!maps) {
+		perror("fopen");
+		return false;
+	}
+
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	while ((read = getline(&line, &len, maps)) != -1) {
+		uint64_t start, end;
+		uint64_t addr_off = 0;
+		char perms[5] = {0};
+		char dev[6] = {0};
+		int inode;
+		char pathname[512] = {0};
+		sscanf(line, "%lx-%lx %4s %lx %5s %d %s", &start, &end, perms, &addr_off, dev, &inode, pathname);
+		if (inst_vaddr >= start && inst_vaddr <= end) {
+			memcpy(image_name, pathname, strlen(pathname));
+			*offset = inst_vaddr - start + addr_off;
+			// DEBUG_LOG("Found image: %s start: %lx offset: %lx\n", pathname, start, addr_off);
+			free(line);
+			fclose(maps);
+			return true;
+		}
+	}
+	free(line);
+	fclose(maps);
+	return false;
+}
