@@ -1,11 +1,11 @@
 callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
-0x1cc49,0x25e0,0x7f3fb4496c49,0x7f3fb447c5e0,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
-0x1dcb8,0xf4e0,0x7f3fb4497cb8,0x7f3fb44894e0,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
-0x1ddc0,0x1db0,0x7f3fb4497dc0,0x7f3fb447bdb0,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
-0xdc91,0xa0480,0x7f3fb4487c91,0x7f3fb4328480,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/libc-2.31.so
-0x11b5a,0x23f00,0x7f3fb448bb5a,0x7f3fb42abf00,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/libc-2.31.so
-0x2400e,0x11f0,0x7f3fb42ac00e,0x5555555571f0,/usr/lib/x86_64-linux-gnu/libc-2.31.so,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf
-0x24081,0x11b3,0x7f3fb42ac081,0x5555555571b3,/usr/lib/x86_64-linux-gnu/libc-2.31.so,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf
+0x1cc49,0x25e0,0x7fd50252cc49,0x7fd5025125e0,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
+0x1dcb8,0xf4e0,0x7fd50252dcb8,0x7fd50251f4e0,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
+0x1ddc0,0x1db0,0x7fd50252ddc0,0x7fd502511db0,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
+0xdc91,0xa0480,0x7fd50251dc91,0x7fd5023be480,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/libc-2.31.so
+0x11b5a,0x23f00,0x7fd502521b5a,0x7fd502341f00,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/usr/lib/x86_64-linux-gnu/libc-2.31.so
+0x2400e,0x11f0,0x7fd50234200e,0x5555555571f0,/usr/lib/x86_64-linux-gnu/libc-2.31.so,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf
+0x24081,0x11b3,0x7fd502342081,0x5555555571b3,/usr/lib/x86_64-linux-gnu/libc-2.31.so,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf
 0x119b,0x1149,0x55555555719b,0x555555557149,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf
-0x468a5,0x11d60,0x7f3fb42ce8a5,0x7f3fb448bd60,/usr/lib/x86_64-linux-gnu/libc-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
-0x11f8b,0x1268,0x7f3fb448bf8b,0x555555557268,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf
+0x468a5,0x11d60,0x7fd5023648a5,0x7fd502521d60,/usr/lib/x86_64-linux-gnu/libc-2.31.so,/usr/lib/x86_64-linux-gnu/ld-2.31.so
+0x11f8b,0x1268,0x7fd502521f8b,0x555555557268,/usr/lib/x86_64-linux-gnu/ld-2.31.so,/work/qemu-dev/new-qemu/tests/x86_64/1-fn-ptr.elf

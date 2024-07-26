@@ -23,14 +23,15 @@ make -j
 
 基于qemu实现存在的问题：  
 - 分支不一定执行到，需要force execution技术
+```
 func_addr = NULL
 if (flag) {
 	func_addr = func1;
 } else {
 	func_addr = func2;
 }
-call(func_addr, args);
-
+func_addr(args);
+```
 
 ### 功能开发  
 
@@ -42,14 +43,20 @@ call(func_addr, args);
 2. 在branch处indirect，实现x86_64和aarch64基本功能  
 - (done) 测试x86_64
 - 测试aarch64基本架构  
+- 基于xcross实现交叉编译
+> export CROSS_TARGET=arm64-unknown-linux-musl
 
-3. 基于`思路2`指令解析来实现
+3. 基于`思路2`指令解析来实现  
 https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 - dump指令，反编译指令
 
 
-4. 支持mips等更多架构
+4. 支持mips等更多架构  
+使用xcross项目来编译：https://github.com/Alexhuszagh/xcross
 
 5. 判断是否是indirect branch  
 - 用capstone重写
 - 测试不同架构
+
+6. 引入专用benchmark  
+https://huhong789.github.io/papers/xia:deeptype.pdf  

@@ -1,6 +1,9 @@
 
 ## Indirect Branch  
+间接跳转是指读取寄存器或者内存值来获取跳转地址，例如：  
+> call rbx
 
+间接跳转分析（Indirect Branch Analysis）是分析出所有的可能的跳转地址。  
 
 ## 基于Capstone来识别不同汇编指令  
 https://www.cnblogs.com/N3ptune/p/16365790.html 

@@ -14,6 +14,6 @@
 
 [详细说明](ibr-fe/README.md)
 
-#### Indirect branch（简介跳转）  
+### Indirect branch（间接跳转）  
 
 [详细说明](ib.md)
