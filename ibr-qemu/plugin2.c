@@ -69,10 +69,12 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	const char *insn_disas = qemu_plugin_insn_disas(insn);
 	GString* insn_op;
 	int err_li = 0;
+	const char *err_str = "";
 
 	/* 疑似 insn_cb cache有bug，libc.so没有注册回调，也能触发
 	*/
 	bool is_ib = is_indirect_branch(insn_opcode, insn_size);
+	// DEBUG_LOG("exec IB: %d %s\n", is_ib, insn_disas);
 	if (!is_ib) {
 		return;
 	}
@@ -80,10 +82,11 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	// 1. 解析指令，通过名称找到对应的reg
 	char reg_name[16] = {0};
 	g_autoptr(GString) reg = g_string_new(NULL);
-	bool suc = capstone_call_get_reg_name(insn_opcode, insn_size, reg_name);
+	bool suc = capstone_get_reg_name(insn_opcode, insn_size, reg_name);
 	// printf("reg name: %s\n", reg_name);
 	if (!suc) {
 		err_li = __LINE__;
+		err_str = "capstone_get_reg_name failed";
 		goto failed;
 	}
 
@@ -106,13 +109,14 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 		goto failed;
 	}
 	res = covert_vaddr_to_offset(dest_val, &dest_inst_offset, dest_image_name);
-	// printf("reg name: %s val: %s val: %lx off: %lx sz: %d\n", reg_name, reg->str, insn_vaddr, dest_inst_offset, reg_sz);
+	DEBUG_LOG("reg name: %s ins: %s reg-val: %s val: %lx off: %lx sz: %d\n", reg_name, insn_disas, reg->str, insn_vaddr, dest_inst_offset, reg_sz);
 	fprintf(output, "0x%lx,0x%lx,0x%lx,0x%lx,%s,%s\n", caller_inst_offset, dest_inst_offset, 
 		insn_vaddr, dest_val, caller_image_name, dest_image_name);
 	return;
 failed:
 	insn_op = dump_insn(insn);
-	DEBUG_LOG("Failed in line: %d reg: %s for insn: %s addr: %lx\n", err_li, reg_name, insn_op->str, insn_vaddr);
+	DEBUG_LOG("Failed [%s] in line: %d reg: %s for insn: %s %s addr: %lx\n", err_str, err_li, reg_name, insn_op->str, insn_disas, insn_vaddr);
+	exit(-1);
 	g_string_free(insn_op, true);
 }
 

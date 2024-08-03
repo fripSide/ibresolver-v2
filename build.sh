@@ -1,6 +1,10 @@
 
 QEMU_DIR=qemu
 
+# 依赖
+# sudo apt-get install libgtk2.0-dev
+# sudo apt-get install libcapstone-dev
+
 build_qemu() {
 	if [ ! -d $QEMU_DIR ]; then
 		git clone https://github.com/qemu/qemu.git qemu
@@ -11,7 +15,7 @@ build_qemu() {
 
 	if [ ! -d $QEMU_DIR/build ]; then
 		cd $QEMU_DIR
-		./configure --enable-plugins --target-list="x86_64-linux-user aarch64-linux-user"
+		./configure --enable-plugins --target-list="x86_64-linux-user aarch64-linux-user arm-linux-user"
 		make -j
 	fi
 }

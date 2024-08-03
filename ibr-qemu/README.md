@@ -3,6 +3,10 @@
 
 qemu编译：
 ```
+apt build-dep qemu
+sudo cp /etc/apt/sources.list /etc/apt/sources.list~
+sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+sudo apt-get update
 git clone https://github.com/qemu/qemu.git
 git checkout tags/v9.0.2 
 ./configure --enable-plugins --target-list="x86_64-linux-user aarch64-linux-user"
@@ -33,6 +37,18 @@ if (flag) {
 func_addr(args);
 ```
 
+### 不同架构交叉编译和运行  
+
+```
+export CROSS_TARGET=arm64-unknown-linux-musl
+xcross c++ main.c -o test
+```
+
+运行：
+```
+../qemu/build/qemu
+```
+
 ### 功能开发  
 
 1. （done）实现`思路1`  
@@ -42,13 +58,17 @@ func_addr(args);
 
 2. 在branch处indirect，实现x86_64和aarch64基本功能  
 - (done) 测试x86_64
-- 测试aarch64基本架构  
-- 基于xcross实现交叉编译
+- （done）基于xcross实现交叉编译
 > export CROSS_TARGET=arm64-unknown-linux-musl
+- (done) 切换回交叉编译工具
+- 开发aarch64基本功能  
+- 测试aarch64基本架构  
+
 
 3. 基于`思路2`指令解析来实现  
 https://shell-storm.org/online/Online-Assembler-and-Disassembler/
-- dump指令，反编译指令
+- （done）dump指令，反编译指令
+- print_insn
 
 
 4. 支持mips等更多架构  
@@ -58,5 +78,13 @@ https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 - 用capstone重写
 - 测试不同架构
 
+5. 更多测试用例  
+gcc测试用例  
+
 6. 引入专用benchmark  
 https://huhong789.github.io/papers/xia:deeptype.pdf  
+
+
+### Bug追踪
+
+1. 1-fn-ptr用例，只显示一个jmp  

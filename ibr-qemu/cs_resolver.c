@@ -1,8 +1,9 @@
 #include "cs_resolver.h"
 
 #include "debug.h"
-#include <glib.h>
+#include "arch/arch.h"
 
+#include <glib.h>
 #include <capstone/capstone.h>
 
 /* 基于Capstone来实现
@@ -16,6 +17,7 @@ static csh handle = 0;
 static void init_capstone();
 static int capstone_get_insn_reg(cs_insn *insn);
 static bool capstone_insn_is_call(cs_insn *insn);
+static bool capstone_insn_is_branch(cs_insn *insn);
 
 bool support_arch(const char *arch)
 {
@@ -31,6 +33,11 @@ bool support_arch(const char *arch)
 	return current_arch != unknown;
 }
 
+/* 通过指令group来判断间接跳转  
+CS_GRP_JUMP:
+CS_GRP_CALL:
+CS_GRP_BRANCH_RELATIVE: cmp也包含，地址可以是offset和寄存器
+*/
 bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 {
 	cs_insn *insn;
@@ -39,31 +46,33 @@ bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 	if (count > 0) {
 		cs_insn *ins = &insn[0];
 
+		// x86
 		// call的操作数是寄存器
 		if (capstone_insn_is_call(ins)) {
 			is_ib = capstone_get_insn_reg(ins) > 0;
 		}
 		
+		if (current_arch == aarch64) {
+			is_ib = aarch64_is_indirect_branch(ins);
+		}
 	}
 	cs_free(insn, count);
 	return is_ib;
 }
 
-bool capstone_call_get_reg_name(uint8_t *insn, size_t insn_len, char *reg_name)
+bool capstone_get_reg_name(uint8_t *insn, size_t insn_len, char *reg_name)
 {
 	cs_insn *insn_cs;
 	size_t count = cs_disasm(handle, insn, insn_len, 0, 0, &insn_cs);
 	uint64_t target = 0;
 	if (count > 0) {
 		cs_insn *ins = &insn_cs[0];
-		if (capstone_insn_is_call(ins)) {
-			int reg = capstone_get_insn_reg(ins);
-			if (reg >= 0) {
-				strcpy(reg_name, cs_reg_name(handle, reg));
-			}
-			cs_free(insn_cs, count);
-			return true;
+		int reg = capstone_get_insn_reg(ins);
+		if (reg >= 0) {
+			strcpy(reg_name, cs_reg_name(handle, reg));
 		}
+		cs_free(insn_cs, count);
+		return true;
 	}
 	cs_free(insn_cs, count);
 	return false;
@@ -95,14 +104,33 @@ static bool capstone_insn_is_call(cs_insn *insn)
 	return false;
 }
 
+static bool capstone_insn_is_branch(cs_insn *insn)
+{
+	/* CS_GRP_BRANCH_RELATIVE，还包含cmp
+	*/
+	// arm/aarch64, br/blr register/relative-offset
+	for (size_t i = 0; i < insn->detail->groups_count; i++) {
+		if (insn->detail->groups[i] == CS_GRP_JUMP || insn->detail->groups[i] == CS_GRP_BRANCH_RELATIVE) {
+			return true;
+		}
+	}
+	return false;
+}
+
 static int capstone_get_insn_reg(cs_insn *insn)
 {
 	g_assert(insn->detail);
 	if (current_arch == x86_64) {
-		// 
 		for (size_t i = 0; i < insn->detail->x86.op_count; i++) {
 			cs_x86_op *op = &insn->detail->x86.operands[i];
 			if (op->type == X86_OP_REG) {
+				return op->reg;
+			}
+		}
+	} else if (current_arch == aarch64) {
+		for (size_t i = 0; i < insn->detail->arm64.op_count; i++) {
+			cs_arm64_op *op = &insn->detail->arm64.operands[i];
+			if (op->type == ARM64_OP_REG) {
 				return op->reg;
 			}
 		}

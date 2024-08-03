@@ -30,7 +30,7 @@ libibr2.so: plugin2.o $(COMMON_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 unit_test:
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -o unit_test test.c backend.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -o unit_test test.c
 
 clean:
 	rm -f *.o *.so

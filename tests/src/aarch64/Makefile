@@ -1,10 +1,9 @@
-export CROSS_TARGET=arm-unknown-linux-musleabi
+export CROSS_TARGET=arm64-unknown-elf
 
-CC := xcross cc -static
-OBJDUMP := xcross objdump
-
-# CC := arm-linux-gnueabihf-gcc
-# OBJDUMP := arm-linux-gnueabihf-objdump
+# CC := xcross cc 
+# OBJDUMP := xcross objdump
+CC := aarch64-linux-gnu-gcc
+OBJDUMP := aarch64-linux-gnu-objdump
 
 COMMON_FILES = $(wildcard ../common/*.c)
 
@@ -17,7 +16,7 @@ ARCH_TESTS = $(patsubst %.c, %, $(ARCH_FILES))
 
 ALL_TESTS = $(COMMON_TESTS) $(ARCH_TESTS)
 
-TARGET := ../../out/arm32
+TARGET := ../../out/aarch64
 
 all: $(ALL_TESTS) $(TARGET)
 .PHONY: clean
