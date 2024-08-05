@@ -1,4 +1,5 @@
 // qemu/include/qemu/qemu-plugin.h
+#include "glib.h"
 #include "qemu-plugin.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -11,8 +12,26 @@
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
 
+typedef struct {
+	struct qemu_plugin_register *handle;
+	const char *name;
+} Register;
 
+typedef struct CPU {
+	/* Store last executed instruction on each vCPU as a GString */
+	GString *last_exec;
+	/* Ptr array of Register */
+	GPtrArray *registers;
+} CPU;
+
+
+// output results
 FILE *output;
+
+static GArray *cpus;
+static GRWLock expand_array_lock;
+static GMutex add_reg_name_lock;
+
 
 static void plugin_init(const qemu_info_t *info) 
 {
@@ -23,20 +42,114 @@ static void plugin_init(const qemu_info_t *info)
 		info->target_name,
 		info->system.smp_vcpus,
 		info->system.max_vcpus);
+
+	cpus = g_array_sized_new(true, true, sizeof(CPU),
+							info->system_emulation ? info->system.max_vcpus : 1);
+}
+
+static CPU *get_cpu(int vcpu_index)
+{
+	CPU *c;
+	g_rw_lock_reader_lock(&expand_array_lock);
+	c = &g_array_index(cpus, CPU, vcpu_index);
+	g_rw_lock_reader_unlock(&expand_array_lock);
+
+	return c;
+}
+
+static Register *init_vcpu_register(qemu_plugin_reg_descriptor *desc)
+{
+	Register *reg = g_new0(Register, 1);
+	g_autofree gchar *lower = g_utf8_strdown(desc->name, -1);
+	int r;
+
+	reg->handle = desc->handle;
+	reg->name = g_intern_string(lower);
+
+	/* read the initial value */
+	// r = qemu_plugin_read_register(reg->handle, reg->last);
+	// g_assert(r > 0);
+
+	return reg;
+}
+
+static GPtrArray *registers_init(int vcpu_index)
+{
+	g_autoptr(GPtrArray) registers = g_ptr_array_new();
+	g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
+
+	printf("init n register: %d\n", reg_list->len);
+
+	if (reg_list->len) {
+		/* TODO: 只需要追踪jmp/call用到的寄存器
+		* Go through each register in the complete list and
+		* see if we want to track it.
+		*/
+		for (int r = 0; r < reg_list->len; r++) {
+			qemu_plugin_reg_descriptor *rd = &g_array_index(
+				reg_list, qemu_plugin_reg_descriptor, r);
+			Register *reg = init_vcpu_register(rd);
+			g_ptr_array_add(registers, reg);
+		}
+	}
+
+	return registers->len ? g_steal_pointer(&registers) : NULL;
+}
+
+
+static void vcpu_init(qemu_plugin_id_t id, unsigned int vcpu_index)
+{
+	CPU *c;
+
+	g_rw_lock_writer_lock(&expand_array_lock);
+	if (vcpu_index >= cpus->len) {
+		g_array_set_size(cpus, vcpu_index + 1);
+	}
+	g_rw_lock_writer_unlock(&expand_array_lock);
+
+	c = get_cpu(vcpu_index);
+	c->registers = registers_init(vcpu_index);
+
+	printf("init cpu: %u\n", vcpu_index);
 }
 
 /*
 	根据寄存器名称，读寄存器的值：
 	https://github.com/qemu/qemu/blob/master/include/qemu/qemu-plugin.h#L868
 */
+static int get_register_value_vcpu(int vcpu, const char *reg_name, GByteArray *reg_val) 
+{
+	// g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
+	CPU *cpu = get_cpu(vcpu);
+	GPtrArray* reg_list = cpu->registers; 
+	printf("reg list: %d\n", reg_list->len);
+	if (reg_list->len) {
+		for (int r = 0; r < reg_list->len; r++) {
+			// qemu_plugin_reg_descriptor *rd = &g_array_index(
+			// 	reg_list, qemu_plugin_reg_descriptor, r);
+			Register *rd = g_ptr_array_index(reg_list, r);
+			printf("reg: %s %d\n", rd->name, r);
+			if (g_str_equal(rd->name, reg_name)) {
+				int res = qemu_plugin_read_register(rd->handle, reg_val);
+				g_assert(res > 0);
+				return res;
+			}
+		}
+	}
+	return 0;
+}
+
+/*
+MPIS: 无法读到寄存器
+*/
 static int get_register_value(const char *reg_name, GByteArray *reg_val) 
 {
 	g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
+	// printf("reg list: %d\n", reg_list->len);
 	if (reg_list->len) {
 		for (int r = 0; r < reg_list->len; r++) {
 			qemu_plugin_reg_descriptor *rd = &g_array_index(
 				reg_list, qemu_plugin_reg_descriptor, r);
-			// printf("reg: %s %d\n", rd->name, r);
 			if (g_str_equal(rd->name, reg_name)) {
 				int res = qemu_plugin_read_register(rd->handle, reg_val);
 				g_assert(res > 0);
@@ -76,6 +189,7 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	bool is_ib = is_indirect_branch(insn_opcode, insn_size);
 	// DEBUG_LOG("exec IB: %d %s\n", is_ib, insn_disas);
 	if (!is_ib) {
+		// DEBUG_LOG("WARNING: Not IB: %s\n", insn_disas);
 		return;
 	}
 
@@ -83,7 +197,7 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	char reg_name[16] = {0};
 	g_autoptr(GString) reg = g_string_new(NULL);
 	bool suc = capstone_get_reg_name(insn_opcode, insn_size, reg_name);
-	// printf("reg name: %s\n", reg_name);
+	// DEBUG_LOG("reg name: %s\n", reg_name);
 	if (!suc) {
 		err_li = __LINE__;
 		err_str = "capstone_get_reg_name failed";
@@ -91,9 +205,11 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	}
 
 	GByteArray *reg_val = g_byte_array_new();
+	// int reg_sz = get_register_value_vcpu(cpu_index, reg_name, reg_val);
 	int reg_sz = get_register_value(reg_name, reg_val);
 	if (reg_sz <= 0) {
 		err_li = __LINE__;
+		err_str = "read reg value failed";
 		goto failed;
 	}
 	uint64_t dest_val = 0;
@@ -172,6 +288,9 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
 
 
 	plugin_init(info);
+
+	// 初始化寄存器
+	// qemu_plugin_register_vcpu_init_cb(id, vcpu_init);
 
 	// 解析indirect branch  
 	qemu_plugin_register_vcpu_tb_trans_cb(id, vcpu_tb_trans);

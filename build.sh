@@ -4,6 +4,11 @@ QEMU_DIR=qemu
 # 依赖
 # sudo apt-get install libgtk2.0-dev
 # sudo apt-get install libcapstone-dev
+# sudo apt install xutils-dev
+
+# mips-linux-user mips64-linux-user 
+# mips64el-linux-user mipsel-linux-user 
+# mipsn32-linux-user mipsn32el-linux-user
 
 build_qemu() {
 	if [ ! -d $QEMU_DIR ]; then
@@ -15,7 +20,8 @@ build_qemu() {
 
 	if [ ! -d $QEMU_DIR/build ]; then
 		cd $QEMU_DIR
-		./configure --enable-plugins --target-list="x86_64-linux-user aarch64-linux-user arm-linux-user"
+		./configure --enable-plugins \
+			--target-list="x86_64-linux-user aarch64-linux-user arm-linux-user mips-linux-user mipsel-linux-user mips64-linux-user mips64el-linux-user ppc64-linux-user ppc64le-linux-user riscv32-linux-user riscv64-linux-user"
 		make -j
 	fi
 }

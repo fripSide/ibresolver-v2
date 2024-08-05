@@ -7,6 +7,7 @@
 static bool aarch64_is_indirect_branch(cs_insn *insn)
 {
 	/* all jump instructions (conditional+direct+indirect jumps)
+	* jmp, cmp and jmp b/br/bl/blr/cbnz/cbz
 	*/
 	bool is_jump = false;
 	for (size_t i = 0; i < insn->detail->groups_count; i++) {
@@ -25,6 +26,5 @@ static bool aarch64_is_indirect_branch(cs_insn *insn)
 			}
 		}
 	}
-
 	return false;
 }

@@ -55,3 +55,9 @@ sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-a
 
 aarch64间接跳转：
 > blr r1
+
+### mips
+mips       - MIPS (32-bit big endian)
+mips64     - MIPS (64-bit big endian)
+mips64el   - MIPS (64-bit little endian)
+mipsel     - MIPS (32-bit little endian)

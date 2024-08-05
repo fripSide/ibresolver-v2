@@ -1,0 +1,19 @@
+callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x1cc,0x0,0x100001cc,0x0,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,
+0x4308,0x2b90,0x10004308,0x10002b90,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x4320,0x2b94,0x10004320,0x10002b94,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x2ba8,0x740,0x10002ba8,0x10000740,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x4308,0x970,0x10004308,0x10000970,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x14c,0x888,0x1000014c,0x10000888,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x43cc,0x257c,0x100043cc,0x1000257c,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0xc48,0xe68,0x10000c48,0x10000e68,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x4308,0x30e8,0x10004308,0x100030e8,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x4308,0x326c,0x10004308,0x1000326c,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x4308,0xa60,0x10004308,0x10000a60,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0xa6c,0x580,0x10000a6c,0x10000580,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x590,0x5d8,0x10000590,0x100005d8,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x610,0x924,0x10000610,0x10000924,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x3ec,0x43ec,0x100003ec,0x100043ec,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x43f8,0x9ec,0x100043f8,0x100009ec,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x3fbc,0x3e0c,0x10003fbc,0x10003e0c,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf
+0x3e48,0x190,0x10003e48,0x10000190,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/1-fn-ptr.elf

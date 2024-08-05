@@ -1,0 +1,8 @@
+{
+	"configurations": [
+		{
+			"compileCommands": "${workspaceFolder}/ibr-qemu/compile_commands.json"
+		}
+	],
+	"version": 4
+}

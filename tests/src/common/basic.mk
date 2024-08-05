@@ -1,10 +1,5 @@
-export CROSS_TARGET=arm-unknown-linux-musleabi
 
-CC := xcross cc -static
-OBJDUMP := xcross objdump
-
-# CC := arm-linux-gnueabihf-gcc
-# OBJDUMP := arm-linux-gnueabihf-objdump
+OBJDUMP ?= objdump
 
 COMMON_FILES = $(wildcard ../common/*.c)
 
@@ -17,10 +12,9 @@ ARCH_TESTS = $(patsubst %.c, %, $(ARCH_FILES))
 
 ALL_TESTS = $(COMMON_TESTS) $(ARCH_TESTS)
 
-TARGET := ../../out/arm32
+TARGET := ../../out/$(ARCH)
 
 all: $(ALL_TESTS) $(TARGET)
-.PHONY: clean
 
 # 匹配common目录的c文件
 VPATH = ../common

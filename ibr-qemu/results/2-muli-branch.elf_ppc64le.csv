@@ -1,0 +1,20 @@
+callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x1cc,0x0,0x100001cc,0x0,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,
+0x43e8,0x2c70,0x100043e8,0x10002c70,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x4400,0x2c74,0x10004400,0x10002c74,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x2c88,0x828,0x10002c88,0x10000828,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x43e8,0xa58,0x100043e8,0x10000a58,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x14c,0x970,0x1000014c,0x10000970,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x44ac,0x2664,0x100044ac,0x10002664,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0xd30,0xf50,0x10000d30,0x10000f50,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0xd30,0xd24,0x10000d30,0x10000d24,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0xd30,0xf50,0x10000d30,0x10000f50,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x43e8,0x31c8,0x100043e8,0x100031c8,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x43e8,0x334c,0x100043e8,0x1000334c,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x43e8,0xb48,0x100043e8,0x10000b48,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0xb54,0x6e4,0x10000b54,0x100006e4,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x6f8,0xa0c,0x100006f8,0x10000a0c,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x3ec,0x44cc,0x100003ec,0x100044cc,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x44d8,0xad4,0x100044d8,0x10000ad4,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x409c,0x3eec,0x1000409c,0x10003eec,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf
+0x3f28,0x190,0x10003f28,0x10000190,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/ppc64le/2-muli-branch.elf

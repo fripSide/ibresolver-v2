@@ -1,4 +1,13 @@
 
+当前进度：
+- x86_64，支持
+- arm，支持
+- arm64，支持
+- ppc32，qemu-user好像不支持
+- ppc64，支持
+- ppc64le，支持
+- mips，plugin1支持（plugin2，指令解析无法读到寄存器）
+
 ### 编译  
 
 qemu编译：
@@ -11,6 +20,12 @@ git clone https://github.com/qemu/qemu.git
 git checkout tags/v9.0.2 
 ./configure --enable-plugins --target-list="x86_64-linux-user aarch64-linux-user"
 make -j
+```
+
+capstone:
+```
+ubuntu 22.04自带的版本：libcapstone-dev
+(4.0.2-5).
 ```
 
 ### 实现思路  
@@ -61,7 +76,7 @@ xcross c++ main.c -o test
 - （done）基于xcross实现交叉编译
 > export CROSS_TARGET=arm64-unknown-linux-musl
 - (done) 切换回交叉编译工具
-- 开发aarch64基本功能  
+- （done）开发aarch64基本功能  
 - 测试aarch64基本架构  
 
 
@@ -72,14 +87,16 @@ https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 
 
 4. 支持mips等更多架构  
-使用xcross项目来编译：https://github.com/Alexhuszagh/xcross
+- (done) 使用xcross项目来编译：https://github.com/Alexhuszagh/xcross
+- todo: 都使用clang来编译
+- mips
 
-5. 判断是否是indirect branch  
-- 用capstone重写
-- 测试不同架构
+
+5. 支持更多indirect branch指令  
+- 确认indirect branch是否完备  
 
 5. 更多测试用例  
-gcc测试用例  
+- gcc测试用例  
 
 6. 引入专用benchmark  
 https://huhong789.github.io/papers/xia:deeptype.pdf  
@@ -88,3 +105,9 @@ https://huhong789.github.io/papers/xia:deeptype.pdf
 ### Bug追踪
 
 1. 1-fn-ptr用例，只显示一个jmp  
+> 一条指令只触发了一次回调
+
+
+2. mips，无法读到寄存器
+
+3. capstone，不支持riscv

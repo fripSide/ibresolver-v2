@@ -2,3 +2,4 @@ qemu
 capstone
 *.o
 *.so
+.cache

@@ -8,15 +8,22 @@
 */
 
 enum arch_t {
-	arm32,
+	arm,
 	aarch64,
 	x86_64,
+	mips,
+	mipsel,
+	mips64,
+	mips64el,
+	ppc64,
+	ppc64le,
+	riscv32,
+	riscv64,
 	unknown,
 };
 
 extern int current_arch;
 
-/* x86_64 helpers */
 bool support_arch(const char *arch);
 
 bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size);

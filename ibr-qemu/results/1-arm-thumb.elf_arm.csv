@@ -1,0 +1,7 @@
+callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x5b4,0x550,0x105b4,0x10550,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf
+0x540,0x1e4,0x10540,0x101e4,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf
+0x578,0x2ec,0x10578,0x102ec,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf
+0x328,0x249,0x10328,0x10249,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf
+0xc08,0xc7c,0x10c08,0x10c7c,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf
+0x5e0,0x1a0,0x105e0,0x101a0,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-arm-thumb.elf

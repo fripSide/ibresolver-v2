@@ -15,6 +15,7 @@ void call_with_args(CB f, int x, int y) {
 }
 
 int main() {
+    call_with_args(add, 5, 8);
     call_with_args(add, 5, 3);
     call_with_args(sub, 123, 42);
 }

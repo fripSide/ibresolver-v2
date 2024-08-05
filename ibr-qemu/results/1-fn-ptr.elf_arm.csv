@@ -1,0 +1,7 @@
+callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x574,0x510,0x10574,0x10510,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf
+0x500,0x204,0x10500,0x10204,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf
+0x538,0x2dc,0x10538,0x102dc,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf
+0x2b8,0x234,0x102b8,0x10234,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf
+0x2abc,0x2968,0x12abc,0x12968,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf
+0x5a0,0x1c0,0x105a0,0x101c0,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/arm/1-fn-ptr.elf

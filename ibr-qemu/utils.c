@@ -44,7 +44,7 @@ static bool simple_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 			}
 		}
 	}
-	else if (current_arch == arm32) {
+	else if (current_arch == arm) {
 		// Handles blx, bx, b, etc.
 		if (insn_size == 2) {
 			uint8_t b0 = insn_data[0];

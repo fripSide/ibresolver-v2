@@ -1,0 +1,11 @@
+callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x1f83a,0x218e0,0x7ff0a71d483a,0x7ff0a71d68e0,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+0x1d348,0x3460,0x7ff0a71d2348,0x7ff0a71b8460,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+0x1d450,0x20ef0,0x7ff0a71d2450,0x7ff0a71d5ef0,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+0x116e9,0xc51a0,0x7ff0a71c66e9,0x7ff0a70511a0,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2,/usr/lib/x86_64-linux-gnu/libc.so.6
+0x11091,0xa8720,0x7ff0a71c6091,0x7ff0a7034720,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2,/usr/lib/x86_64-linux-gnu/libc.so.6
+0x29e19,0x11f0,0x7ff0a6fb5e19,0x5555555571f0,/usr/lib/x86_64-linux-gnu/libc.so.6,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/x86_64/1-fn-ptr.elf
+0x29d8e,0x11b3,0x7ff0a6fb5d8e,0x5555555571b3,/usr/lib/x86_64-linux-gnu/libc.so.6,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/x86_64/1-fn-ptr.elf
+0x119b,0x1149,0x55555555719b,0x555555557149,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/x86_64/1-fn-ptr.elf,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/x86_64/1-fn-ptr.elf
+0x45493,0x6040,0x7ff0a6fd1493,0x7ff0a71bb040,/usr/lib/x86_64-linux-gnu/libc.so.6,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+0x6272,0x1268,0x7ff0a71bb272,0x555555557268,/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2,/home/hy/work/qemu-dev/ibresolver-v2/tests/out/x86_64/1-fn-ptr.elf

@@ -1,5 +1,5 @@
 
-../../out/arm32/2-muli-branch.elf:     file format elf32-littlearm
+../../out/arm/2-muli-branch.elf:     file format elf32-littlearm
 
 
 Disassembly of section .init:
