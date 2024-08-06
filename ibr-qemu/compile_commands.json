@@ -8,6 +8,43 @@
       "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/../qemu/include/qemu/",
       "-I/usr/include/glib-2.0",
       "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+      "-I../capstone/include",
+      "-o",
+      "plugin1.o",
+      "plugin1.c"
+    ],
+    "directory": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu",
+    "file": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/plugin1.c",
+    "output": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/plugin1.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-fPIC",
+      "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/",
+      "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/../qemu/include/qemu/",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+      "-I../capstone/include",
+      "-o",
+      "utils.o",
+      "utils.c"
+    ],
+    "directory": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu",
+    "file": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/utils.c",
+    "output": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/utils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-fPIC",
+      "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/",
+      "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/../qemu/include/qemu/",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+      "-I../capstone/include",
       "-o",
       "cs_resolver.o",
       "cs_resolver.c"
@@ -15,5 +52,23 @@
     "directory": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu",
     "file": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/cs_resolver.c",
     "output": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/cs_resolver.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-fPIC",
+      "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/",
+      "-I/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/../qemu/include/qemu/",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+      "-I../capstone/include",
+      "-o",
+      "plugin2.o",
+      "plugin2.c"
+    ],
+    "directory": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu",
+    "file": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/plugin2.c",
+    "output": "/home/hy/work/qemu-dev/ibresolver-v2/ibr-qemu/plugin2.o"
   }
 ]

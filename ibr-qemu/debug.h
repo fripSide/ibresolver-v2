@@ -15,6 +15,13 @@
 		exit(-1);				\
 	} while (0)
 
+#define ASSERT(cond)	\
+	do {						\
+		if (!(cond)) {			\
+			FATAL_ERR("Assert Failed in file: %s li: %d\n", __FILE__, __LINE__);	\
+		}						\
+	} while (0)
+
 static GString* dump_insn(struct qemu_plugin_insn * insn)
 {
 	size_t insn_size = qemu_plugin_insn_size(insn);

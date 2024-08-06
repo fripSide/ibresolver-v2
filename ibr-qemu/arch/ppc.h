@@ -5,16 +5,15 @@
 #include <capstone/ppc.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include "../debug.h"
 
 
 static bool ppc64_is_indirect_branch(cs_insn *insn)
 {
 	// Powever PC Indirect Function Call: 
-	// mtlr r0
+	// mtlr r0 
 	// blrl
-
+	DEBUG_LOG("mtlr: %d %d %lx %s\n", PPC_INS_MTLR, insn->id, insn->alias_id, insn->op_str);
 	if (insn->id == PPC_INS_MTLR) {
 		if (insn->detail->ppc.op_count == 1) {
 			cs_ppc_op *op = &insn->detail->ppc.operands[0];
@@ -23,7 +22,6 @@ static bool ppc64_is_indirect_branch(cs_insn *insn)
 			}
 		}
 	}
-
 	return false;
 }
 

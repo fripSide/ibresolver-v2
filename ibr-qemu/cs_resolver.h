@@ -9,16 +9,16 @@
 
 enum arch_t {
 	arm,
-	aarch64,
+	aarch64, // 1
 	x86_64,
 	mips,
 	mipsel,
-	mips64,
+	mips64, // 5
 	mips64el,
 	ppc64,
 	ppc64le,
 	riscv32,
-	riscv64,
+	riscv64, // 10
 	unknown,
 };
 

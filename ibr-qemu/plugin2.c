@@ -244,7 +244,7 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 		struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
 		uint8_t *insn_data = (uint8_t *) qemu_plugin_insn_data(insn);
 
-		// print_insn(insn);
+		print_insn(insn);
 
 		bool is_ib = is_indirect_branch(insn_data, qemu_plugin_insn_size(insn));
 		g_autoptr(GString) insn_op = dump_insn(insn);

@@ -7,6 +7,7 @@
 #include <glib.h>
 #include <capstone/capstone.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* 基于Capstone来实现
 https://github.com/capstone-engine/capstone/blob/5ba4ca4ba6b9ba7edb41243a036f973cb056d143/include/capstone/capstone.h#L314C2-L314C24
@@ -63,7 +64,7 @@ bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 	bool is_ib = false;
 	if (count > 0) {
 		cs_insn *ins = &insn[0];
-
+		printf("ins->id: %d\n", ins->id);
 		if (current_arch == x86_64) {
 			is_ib = x86_64_is_indirect_branch(ins);
 		}
@@ -127,13 +128,13 @@ static void init_capstone()
 {
 	int cs_conf[][2] = {
 		[arm] = {CS_ARCH_ARM, CS_MODE_ARM},
-		[aarch64] = {CS_ARCH_ARM64, CS_MODE_ARM},
+		[aarch64] = {CS_ARCH_AARCH64, CS_MODE_ARM},
 		[x86_64] = {CS_ARCH_X86, CS_MODE_64},
 		[mips] = {CS_ARCH_MIPS, CS_MODE_MIPS32  | CS_MODE_BIG_ENDIAN},
 		[mipsel] = {CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN},
 		[mips64] = {CS_ARCH_MIPS, CS_MODE_MIPS64  | CS_MODE_BIG_ENDIAN},
-		[mips64el] = {CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_LITTLE_ENDIAN},
-		[ppc64] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN},
+		[mips64el] = {CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_BIG_ENDIAN},
+		[ppc64] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN},
 		[ppc64le] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN},
 		// [riscv32] = {CS_ARCH_RISCV, CS_MODE_RISCV32},
 		// [riscv64] = {CS_ARCH_RISCV, CS_MODE_RISCV64},
@@ -146,7 +147,9 @@ static void init_capstone()
 		FATAL_ERR("Failed to inital Capstone for arch: %s\n", sup_arch[current_arch]);
 	}
 
-	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
+	if (cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON)) {
+		FATAL_ERR("Failed to set Capstone detail insn for arch: %s\n", sup_arch[current_arch]);
+	}
 }
 
 static int capstone_get_insn_reg(cs_insn *insn)
@@ -160,9 +163,9 @@ static int capstone_get_insn_reg(cs_insn *insn)
 			}
 		}
 	} else if (current_arch == aarch64) {
-		for (size_t i = 0; i < insn->detail->arm64.op_count; i++) {
-			cs_arm64_op *op = &insn->detail->arm64.operands[i];
-			if (op->type == ARM64_OP_REG) {
+		for (size_t i = 0; i < insn->detail->aarch64.op_count; i++) {
+			cs_aarch64_op *op = &insn->detail->aarch64.operands[i];
+			if (op->type == AARCH64_OP_REG) {
 				return op->reg;
 			}
 		}

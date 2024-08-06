@@ -71,13 +71,13 @@ xcross c++ main.c -o test
 - (done) 运行qemu自带的插件，例如：execlog看覆盖率
 - (done) 写到三个测试用例
 
-2. 在branch处indirect，实现x86_64和aarch64基本功能  
+2. (done)在branch处indirect，实现x86_64和aarch64基本功能  
 - (done) 测试x86_64
 - （done）基于xcross实现交叉编译
 > export CROSS_TARGET=arm64-unknown-linux-musl
 - (done) 切换回交叉编译工具
 - （done）开发aarch64基本功能  
-- 测试aarch64基本架构  
+- （done）测试aarch64基本架构  
 
 
 3. 基于`思路2`指令解析来实现  
@@ -90,6 +90,7 @@ https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 - (done) 使用xcross项目来编译：https://github.com/Alexhuszagh/xcross
 - todo: 都使用clang来编译
 - mips
+- riscv，切换最新的capstone
 
 
 5. 支持更多indirect branch指令  

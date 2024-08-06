@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include <capstone/capstone.h>
+#include "capstone/capstone.h"
 
 // https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 
@@ -12,26 +12,26 @@
 // #define CODE "\xe8\xa7\xfc\xff\xff"
 
 // aarch64
-// #define CODE "\x40\x00\x3f\xd6" // blr x2
+#define CODE "\x40\x00\x3f\xd6" // blr x2
 // #define CODE "\x58\x01\x00\x94" // bl #560
 // #define CODE "\xc1\x03\x00\xb4" // cbz x1, #0x78
 // #define CODE "\x09\xf8\x20\x03\x00\x00\x00\x00" // mipsel jalr $t9 
 // #define CODE "\x03\x20\xf8\x09"
-#define CODE "\x7d\x89\x03\xa6" // mctrl r12
+// #define CODE "\x7d\x89\x03\xa6" // mctrl r12
 
 csh handle;
 
 static void dump_ins_op_arm64(cs_insn *insn)
 {
-	cs_arm64_op *cs_op;
-	printf("arm64 op count: %d\n", insn->detail->arm64.op_count);
-	for (size_t i = 0; i < insn->detail->arm64.op_count; i++) {
-		cs_op = &(insn->detail->arm64.operands[i]);
+	cs_aarch64_op *cs_op;
+	printf("arm64 op count: %d\n", insn->detail->aarch64.op_count);
+	for (size_t i = 0; i < insn->detail->aarch64.op_count; i++) {
+		cs_op = &(insn->detail->aarch64.operands[i]);
 		printf("op type: %d\n", cs_op->type);
-		if (cs_op->type == ARM64_OP_REG) {
+		if (cs_op->type == AARCH64_OP_REG) {
 			printf("reg: %s %d\n", cs_reg_name(handle, cs_op->reg), cs_op->reg);
 		}
-		if (cs_op->type == ARM64_OP_IMM) {
+		if (cs_op->type ==  AARCH64_OP_IMM) {
 			printf("imm: 0x%"PRIx64"\n", cs_op->imm);
 		}
 	}
@@ -85,7 +85,7 @@ bool capstone_is_ib(cs_insn *ins)
 	for (size_t i = 0;i < ins->detail->groups_count;i++) {
 		if (ins->detail->groups[i] == CS_GRP_JUMP || ins->detail->groups[i] == CS_GRP_BRANCH_RELATIVE) {
 			is_ib = true;
-			// dump_ins_op_arm64(ins);
+			dump_ins_op_arm64(ins);
 		}
 	}
 
@@ -94,14 +94,16 @@ bool capstone_is_ib(cs_insn *ins)
 	if (is_call) {
 		printf("----------------------\n");
 		printf("is call: %d\n", is_call);
-		dump_mips_op(ins);
+		// dump_mips_op(ins);
+		dump_ins_op_arm64(ins);
 		printf("----------------------\n");
 	}
 
 	if (is_ib) {
 		printf("----------------------\n");
 		printf("is branch: %d\n", is_ib);
-		dump_mips_op(ins);
+		dump_ins_op_arm64(ins);
+		// dump_mips_op(ins);
 		printf("----------------------\n");
 	}
 
@@ -123,12 +125,16 @@ int main(void)
 	size_t count;
 
 	// CS_ARCH_X86, CS_MODE_64
-	// 
+	// CS_ARCH_AARCH64 CS_MODE_ARM
 	int arch = CS_ARCH_PPC;
+	arch = CS_ARCH_AARCH64;
 	int mode = CS_MODE_64 | CS_MODE_BIG_ENDIAN;
+	mode = CS_MODE_ARM;
 
-	if (cs_open(arch, mode, &handle) != CS_ERR_OK)
+	if (cs_open(arch, mode, &handle) != CS_ERR_OK)  {
+		printf("ERROR: Failed on cs_open()\n");
 		return -1;
+	}
 	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 
 	// cs_regs regs_read, regs_write;
