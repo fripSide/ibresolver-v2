@@ -22,10 +22,11 @@ install_deps() {
 	sudo apt-get update
 	sudo apt build-dep qemu
 	# capstone
-	sudo apt-get install libcapstone-dev
+	# sudo apt-get install libcapstone-dev
 	echo "deps are installed" > ./install_deps
 }
 
+# 编译qemu和capstone
 build_qemu() {
 	if [ ! -d $QEMU_DIR ]; then
 		git clone https://github.com/qemu/qemu.git qemu
@@ -34,28 +35,21 @@ build_qemu() {
 		cd -
 	fi
 
+	if [ ! -f $QEMU_DIR/capstone/libcapstone.a ]; then
+		cd $QEMU_DIR/capstone
+		# need sudo
+		CAPSTONE_ARCHS="arm aarch64 x86 mips powerpc riscv" ./make.sh install
+		cd - 
+	fi
+
 	if [ ! -d $QEMU_DIR/build ]; then
 		cd $QEMU_DIR
-		./configure --enable-plugins \
+		export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/lib64/pkgconfig/
+		./configure --enable-plugins --enable-capstone \
 			--target-list="x86_64-linux-user aarch64-linux-user arm-linux-user mips-linux-user mipsel-linux-user mips64-linux-user mips64el-linux-user ppc64-linux-user ppc64le-linux-user riscv32-linux-user riscv64-linux-user"
 		make -j
 	fi
 }
 
-build_capstone() {
-	# 启用next分支，来支持riscv
-	if [ ! -d capstone ]; then
-		git clone https://github.com/capstone-engine/capstone.git capstone
-		cd capstone
-		git switch next
-		cd -
-	fi
-	if [ ! -f libcapstone.so ]; then
-		cd capstone
-		CAPSTONE_ARCHS="arm aarch64 x86 mips powerpc riscv" ./make.sh 
-	fi
-}
-
-# install_deps
-# build_qemu
-build_capstone
+install_deps
+build_qemu

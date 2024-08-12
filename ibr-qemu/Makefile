@@ -6,16 +6,19 @@ CFLAGS = -fPIC
 
 # MAKEDEPEND = makedepend -f- $(CPPFLAGS) $< | sed -n 's,^[^\#][^:]*: *\(..*\),$@: \1\n\1:,p' > $*.d
 
-# 使用自己编译的capstone 5
-# LIB_CAPSTONE = -lcapstone
-LIB_CAPSTONE = -L../capstone -l:libcapstone.a
+# 使用自己编译qemu-next分支的capstone 5
+# LIB_CAPSTONE = -lcapstone -Wl,-rpath=./../qemu/capstone
+LIB_CAPSTONE = -lcapstone -Wl,-rpath=/usr/lib64/
+H_CAPSTONE = /usr/include/capstone
 # -Wl,-rpath=./../capstone ../capstone/libcapstone.so.5
+
+# export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/lib64/pkgconfig/
 
 QEMU_DIR = $(shell pwd)/../qemu
 
 QEMU_PLUGIN_H = $(QEMU_DIR)/include/qemu/
 
-INCLUDES = -I$(shell pwd)/ -I$(QEMU_PLUGIN_H) `pkg-config --cflags glib-2.0` -I../capstone/include
+INCLUDES = -I$(shell pwd)/ -I$(QEMU_PLUGIN_H) `pkg-config --cflags glib-2.0` -I$(H_CAPSTONE)
 
 LDFLAGS = -shared -lstdc++ `pkg-config --libs glib-2.0` $(LIB_CAPSTONE)
 

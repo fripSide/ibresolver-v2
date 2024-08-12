@@ -1,0 +1,38 @@
+diff --git a/contrib/plugins/execlog.c b/contrib/plugins/execlog.c
+index fab18113d4..a9b6f4fec6 100644
+--- a/contrib/plugins/execlog.c
++++ b/contrib/plugins/execlog.c
+@@ -334,6 +334,9 @@ static GPtrArray *registers_init(int vcpu_index)
+     g_autoptr(GPtrArray) registers = g_ptr_array_new();
+     g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
+ 
++    printf("init n register: %d\n", reg_list->len);
++    g_assert(reg_list->len);
++
+     if (rmatches && reg_list->len) {
+         /*
+          * Go through each register in the complete list and
+diff --git a/gdbstub/gdbstub.c b/gdbstub/gdbstub.c
+index 9c23d44baf..171044d7ad 100644
+--- a/gdbstub/gdbstub.c
++++ b/gdbstub/gdbstub.c
+@@ -31,6 +31,7 @@
+ #include "trace.h"
+ #include "exec/gdbstub.h"
+ #include "gdbstub/syscalls.h"
++#include <stdio.h>
+ #ifdef CONFIG_USER_ONLY
+ #include "gdbstub/user.h"
+ #else
+diff --git a/include/disas/capstone.h b/include/disas/capstone.h
+index e29068dd97..a11985151d 100644
+--- a/include/disas/capstone.h
++++ b/include/disas/capstone.h
+@@ -3,6 +3,7 @@
+ 
+ #ifdef CONFIG_CAPSTONE
+ 
++#define CAPSTONE_AARCH64_COMPAT_HEADER
+ #include <capstone.h>
+ 
+ #else

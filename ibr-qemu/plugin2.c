@@ -244,13 +244,13 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 		struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
 		uint8_t *insn_data = (uint8_t *) qemu_plugin_insn_data(insn);
 
-		print_insn(insn);
+		// print_insn(insn);
 
 		bool is_ib = is_indirect_branch(insn_data, qemu_plugin_insn_size(insn));
 		g_autoptr(GString) insn_op = dump_insn(insn);
 
 		if (is_ib) {
-			// DEBUG_LOG("IB: %d %s\n", is_ib, insn_op->str);
+			DEBUG_LOG("IB: op: %s ins: %s\n", insn_op->str, qemu_plugin_insn_disas(insn));
 			qemu_plugin_register_vcpu_insn_exec_cb(insn, vcpu_insn_exec_with_regs,
 				QEMU_PLUGIN_CB_R_REGS, (void *) insn);
 		}

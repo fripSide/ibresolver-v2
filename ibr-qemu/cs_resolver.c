@@ -64,7 +64,6 @@ bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 	bool is_ib = false;
 	if (count > 0) {
 		cs_insn *ins = &insn[0];
-		printf("ins->id: %d\n", ins->id);
 		if (current_arch == x86_64) {
 			is_ib = x86_64_is_indirect_branch(ins);
 		}

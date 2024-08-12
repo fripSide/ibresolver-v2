@@ -4,3 +4,4 @@ capstone
 *.so
 .cache
 install_deps
+*.exe
