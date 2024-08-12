@@ -122,13 +122,13 @@ static int get_register_value_vcpu(int vcpu, const char *reg_name, GByteArray *r
 	// g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
 	CPU *cpu = get_cpu(vcpu);
 	GPtrArray* reg_list = cpu->registers; 
-	printf("reg list: %d\n", reg_list->len);
+	// printf("reg list: %d\n", reg_list->len);
 	if (reg_list->len) {
 		for (int r = 0; r < reg_list->len; r++) {
 			// qemu_plugin_reg_descriptor *rd = &g_array_index(
 			// 	reg_list, qemu_plugin_reg_descriptor, r);
 			Register *rd = g_ptr_array_index(reg_list, r);
-			printf("reg: %s %d\n", rd->name, r);
+			// printf("reg: %s %d\n", rd->name, r);
 			if (g_str_equal(rd->name, reg_name)) {
 				int res = qemu_plugin_read_register(rd->handle, reg_val);
 				g_assert(res > 0);
@@ -150,6 +150,7 @@ static int get_register_value(const char *reg_name, GByteArray *reg_val)
 		for (int r = 0; r < reg_list->len; r++) {
 			qemu_plugin_reg_descriptor *rd = &g_array_index(
 				reg_list, qemu_plugin_reg_descriptor, r);
+			// printf("reg: %s %d\n", rd->name, r);
 			if (g_str_equal(rd->name, reg_name)) {
 				int res = qemu_plugin_read_register(rd->handle, reg_val);
 				g_assert(res > 0);
@@ -225,14 +226,16 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 		goto failed;
 	}
 	res = covert_vaddr_to_offset(dest_val, &dest_inst_offset, dest_image_name);
+
+	// 保持结构到 output.csv
 	DEBUG_LOG("reg name: %s ins: %s reg-val: %s val: %lx off: %lx sz: %d\n", reg_name, insn_disas, reg->str, insn_vaddr, dest_inst_offset, reg_sz);
-	fprintf(output, "0x%lx,0x%lx,0x%lx,0x%lx,%s,%s\n", caller_inst_offset, dest_inst_offset, 
+	fprintf(output, "0x%lx, 0x%lx, 0x%lx, 0x%lx, %s, %s\n", caller_inst_offset, dest_inst_offset, 
 		insn_vaddr, dest_val, caller_image_name, dest_image_name);
 	return;
 failed:
 	insn_op = dump_insn(insn);
 	DEBUG_LOG("Failed [%s] in line: %d reg: %s for insn: %s %s addr: %lx\n", err_str, err_li, reg_name, insn_op->str, insn_disas, insn_vaddr);
-	exit(-1);
+	// exit(-1);
 	g_string_free(insn_op, true);
 }
 
@@ -250,7 +253,8 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 		g_autoptr(GString) insn_op = dump_insn(insn);
 
 		if (is_ib) {
-			DEBUG_LOG("IB: op: %s ins: %s\n", insn_op->str, qemu_plugin_insn_disas(insn));
+			uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
+			DEBUG_LOG("IB: 0x%lx op: %s ins: %s\n", insn_vaddr, insn_op->str, qemu_plugin_insn_disas(insn));
 			qemu_plugin_register_vcpu_insn_exec_cb(insn, vcpu_insn_exec_with_regs,
 				QEMU_PLUGIN_CB_R_REGS, (void *) insn);
 		}

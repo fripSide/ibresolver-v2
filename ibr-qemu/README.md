@@ -93,22 +93,33 @@ https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 - riscv，切换最新的capstone
 
 
-5. 支持更多indirect branch指令  
+5. 测试arm/aarch64, x86, power-pc, riscv，功能是否正确
+
+6. 支持mips，解析寄存器
+
+
+
+7. 支持更多indirect branch指令  
 - 确认indirect branch是否完备  
 
-5. 更多测试用例  
+8. 更多测试用例  
 - gcc测试用例  
 
-6. 引入专用benchmark  
+9. 引入专用benchmark  
 https://huhong789.github.io/papers/xia:deeptype.pdf  
+
+
 
 
 ### Bug追踪
 
 1. 1-fn-ptr用例，只显示一个jmp  
-> 一条指令只触发了一次回调
+> 一条指令只触发了一次回调  
 
 
-2. mips，无法读到寄存器
+2. mips，无法读到寄存器  
 
-3. capstone，不支持riscv
+3. (done) capstone，不支持riscv  
+解决：使用qemu-next中自带的capstone 5.0  
+
+4. riscv，qemu没法读到s0寄存器  

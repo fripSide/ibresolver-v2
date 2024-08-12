@@ -14,7 +14,7 @@ ARCH="x86_64"
 # ARCH="ppc64"
 # ARCH="ppc64le"
 # ARCH="riscv32"
-# ARCH="riscv64"
+ARCH="riscv64"
 
 LIBC=""
 QEMU="../qemu/build/qemu-${ARCH}"

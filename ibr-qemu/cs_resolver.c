@@ -91,14 +91,11 @@ bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 		else if (current_arch == ppc64le) {
 			is_ib = ppc64le_is_indirect_branch(ins);
 		}
-		else if (current_arch == riscv32) {
-			// DEBUG_LOG("WARN: is_ib for arch %s is not implemented\n", sup_arch[current_arch]);
-		}
-		else if (current_arch == riscv64) {
-			// DEBUG_LOG("WARN: is_ib for arch %s is not implemented\n", sup_arch[current_arch]);
+		else if (current_arch == riscv32 || current_arch == riscv64) {
+			is_ib = riscv_is_indirect_branch(ins);
 		}
 		else {
-			// DEBUG_LOG("WARN: is_ib for arch %s is not implemented\n", sup_arch[current_arch]);
+			DEBUG_LOG("WARN: is_ib for arch %s is not implemented\n", sup_arch[current_arch]);
 		}
 	}
 	cs_free(insn, count);
@@ -125,6 +122,7 @@ bool capstone_get_reg_name(uint8_t *insn, size_t insn_len, char *reg_name)
 
 static void init_capstone()
 {
+	// https://github.com/capstone-engine/capstone/blob/next/cstool/cstool.c
 	int cs_conf[][2] = {
 		[arm] = {CS_ARCH_ARM, CS_MODE_ARM},
 		[aarch64] = {CS_ARCH_AARCH64, CS_MODE_ARM},
@@ -135,8 +133,8 @@ static void init_capstone()
 		[mips64el] = {CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_BIG_ENDIAN},
 		[ppc64] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN},
 		[ppc64le] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN},
-		// [riscv32] = {CS_ARCH_RISCV, CS_MODE_RISCV32},
-		// [riscv64] = {CS_ARCH_RISCV, CS_MODE_RISCV64},
+		[riscv32] = {CS_ARCH_RISCV, CS_MODE_RISCV32 | CS_MODE_RISCVC},
+		[riscv64] = {CS_ARCH_RISCV, CS_MODE_RISCV64 | CS_MODE_RISCVC},
 		[unknown] = {-1, -1},
 	};
 
@@ -186,6 +184,13 @@ static int capstone_get_insn_reg(cs_insn *insn)
 		for (size_t i = 0; i < insn->detail->ppc.op_count; i++) {
 			cs_ppc_op *op = &insn->detail->ppc.operands[i];
 			if (op->type == PPC_OP_REG) {
+				return op->reg;
+			}
+		}
+	} else if (current_arch == riscv32 || current_arch == riscv64) {
+		for (size_t i = 0; i < insn->detail->riscv.op_count; i++) {
+			cs_riscv_op *op = &insn->detail->riscv.operands[i];
+			if (op->type == RISCV_OP_REG) {
 				return op->reg;
 			}
 		}
