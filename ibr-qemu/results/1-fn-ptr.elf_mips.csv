@@ -1,1 +1,5 @@
 callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x228, 0x4d77000, 0x400228, 0x30024000, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, 
+0x8e4, 0x8da7000, 0x4008e4, 0x34054000, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, 
+0x4e8, 0x14d97000, 0x4004e8, 0x40044000, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, 
+0x621c, 0xbc1c000, 0x40621c, 0xc034000, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, 

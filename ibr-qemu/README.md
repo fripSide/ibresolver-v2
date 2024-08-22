@@ -95,17 +95,33 @@ https://shell-storm.org/online/Online-Assembler-and-Disassembler/
 
 5. 测试arm/aarch64, x86, power-pc, riscv，功能是否正确
 
-6. 支持mips，解析寄存器
+6. 支持mips，解析寄存器  
+破案了，是qemu没有加mips的gdb-xml支持了：
+https://lists.gnu.org/archive/html/qemu-ppc/2023-07/msg00372.html  
+解决方法：从gdb把寄存器配置复制过去  
+https://github.com/mlkazar/gdb92/tree/master/gdb/features  
+需要生成这个文件：  
+qemu/build/x86_64-linux-user-gdbstub-xml.c  
 
+都10多年了，为啥mips的gdb配置始终没有被加进去？  
+https://github.com/qemu/qemu/tree/stable-2.11/gdb-xml  
 
+寄存器t9，来自于哪里？  
+https://homepage.divms.uiowa.edu/~ghosh/1-28-10.pdf  
+t9，即r25。  
 
-7. 支持更多indirect branch指令  
+TODO：mips寄存器读取，值不对。
+
+7. 实现自动单元测试  
+检查mips是否实现正确  
+
+8. 支持更多indirect branch指令  
 - 确认indirect branch是否完备  
 
-8. 更多测试用例  
+9. 更多测试用例  
 - gcc测试用例  
 
-9. 引入专用benchmark  
+10. 引入专用benchmark  
 https://huhong789.github.io/papers/xia:deeptype.pdf  
 
 
@@ -123,3 +139,10 @@ https://huhong789.github.io/papers/xia:deeptype.pdf
 解决：使用qemu-next中自带的capstone 5.0  
 
 4. riscv，qemu没法读到s0寄存器  
+
+
+### 后续优化  
+
+1. 将qemu mips读寄存器支持提交到upstream  
+需要将xml都复制过去：https://android.googlesource.com/toolchain/gdb/+/refs/heads/main/gdb-9.2/gdb/features  
+并且像arm一样实现根据特性判断，来加载不同寄存器配置: arm_cpu_register_gdb_regs_for_features  

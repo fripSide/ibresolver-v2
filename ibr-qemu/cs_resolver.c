@@ -73,17 +73,8 @@ bool capstone_is_indirect_branch(uint8_t *insn_data, size_t insn_size)
 		else if (current_arch == arm) {
 			is_ib = arm_is_indirect_branch(ins);
 		}
-		else if (current_arch == mips) {
+		else if (current_arch == mips || current_arch == mipsel || current_arch == mips64 || current_arch == mips64el) {
 			is_ib = mips_is_indirect_branch(ins);
-		}
-		else if (current_arch == mipsel) {
-			is_ib = mipsel_is_indirect_branch(ins);
-		}
-		else if (current_arch == mips64) {
-			is_ib = mips64_is_indirect_branch(ins);
-		}
-		else if (current_arch == mips64el) {
-			is_ib = mips64el_is_indirect_branch(ins);
 		}
 		else if (current_arch == ppc64) {
 			is_ib = ppc64_is_indirect_branch(ins);
@@ -110,9 +101,16 @@ bool capstone_get_reg_name(uint8_t *insn, size_t insn_len, char *reg_name)
 	if (count > 0) {
 		cs_insn *ins = &insn_cs[0];
 		int reg = capstone_get_insn_reg(ins);
-		if (reg >= 0) {
-			strcpy(reg_name, cs_reg_name(handle, reg));
+
+		if (current_arch == mips || current_arch == mipsel || current_arch == mips64 || current_arch == mips64el) {
+			strcpy(reg_name, mips_get_reg_name(reg));
+		} else {
+			if (reg >= 0) {
+				strcpy(reg_name, cs_reg_name(handle, reg));
+			}
 		}
+		
+		DEBUG_LOG("capstone reg-map: [%d] -> %s\n", reg, reg_name);
 		cs_free(insn_cs, count);
 		return true;
 	}

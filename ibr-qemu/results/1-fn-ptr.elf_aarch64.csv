@@ -1,0 +1,4 @@
+callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0x5cc, 0x550, 0x4005cc, 0x400550, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/aarch64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/aarch64/1-fn-ptr.elf
+0x6c0, 0x6c4, 0x4006c0, 0x4006c4, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/aarch64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/aarch64/1-fn-ptr.elf
+0x1ba0, 0x1ce0, 0x401ba0, 0x401ce0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/aarch64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/aarch64/1-fn-ptr.elf

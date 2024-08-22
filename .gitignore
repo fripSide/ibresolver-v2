@@ -5,3 +5,4 @@ capstone
 .cache
 install_deps
 *.exe
+out.csv

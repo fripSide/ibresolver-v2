@@ -1,19 +1,15 @@
-diff --git a/contrib/plugins/execlog.c b/contrib/plugins/execlog.c
-index fab18113d4..a9b6f4fec6 100644
---- a/contrib/plugins/execlog.c
-+++ b/contrib/plugins/execlog.c
-@@ -334,6 +334,9 @@ static GPtrArray *registers_init(int vcpu_index)
-     g_autoptr(GPtrArray) registers = g_ptr_array_new();
-     g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
- 
-+    printf("init n register: %d\n", reg_list->len);
-+    g_assert(reg_list->len);
-+
-     if (rmatches && reg_list->len) {
-         /*
-          * Go through each register in the complete list and
+diff --git a/configs/targets/mips-linux-user.mak b/configs/targets/mips-linux-user.mak
+index b4569a9893..3b7ac17e29 100644
+--- a/configs/targets/mips-linux-user.mak
++++ b/configs/targets/mips-linux-user.mak
+@@ -3,3 +3,4 @@ TARGET_ABI_MIPSO32=y
+ TARGET_SYSTBL_ABI=o32
+ TARGET_SYSTBL=syscall_o32.tbl
+ TARGET_BIG_ENDIAN=y
++TARGET_XML_FILES= gdb-xml/mips-cpu.xml gdb-xml/mips64-cpu.xml
+\ No newline at end of file
 diff --git a/gdbstub/gdbstub.c b/gdbstub/gdbstub.c
-index 9c23d44baf..171044d7ad 100644
+index 9c23d44baf..6a6e74eb7d 100644
 --- a/gdbstub/gdbstub.c
 +++ b/gdbstub/gdbstub.c
 @@ -31,6 +31,7 @@
@@ -24,6 +20,25 @@ index 9c23d44baf..171044d7ad 100644
  #ifdef CONFIG_USER_ONLY
  #include "gdbstub/user.h"
  #else
+@@ -562,6 +563,10 @@ static void gdb_register_feature(CPUState *cpu, int base_reg,
+         .feature = feature
+     };
+ 
++    for (int i = 0; i < feature->num_regs; i++) {
++        printf("append reg: %s\n", feature->regs[i]);
++        // printf("[%d] = \"%s\",\n", i, feature->regs[i]);
++    }
+     g_array_append_val(cpu->gdb_regs, s);
+ }
+ 
+@@ -583,6 +588,7 @@ void gdb_init_cpu(CPUState *cpu)
+     if (cc->gdb_num_core_regs) {
+         cpu->gdb_num_regs = cpu->gdb_num_g_regs = cc->gdb_num_core_regs;
+     }
++    printf("GDB reg num: %d\n", cpu->gdb_num_regs);
+ }
+ 
+ void gdb_register_coprocessor(CPUState *cpu,
 diff --git a/include/disas/capstone.h b/include/disas/capstone.h
 index e29068dd97..a11985151d 100644
 --- a/include/disas/capstone.h
@@ -36,3 +51,42 @@ index e29068dd97..a11985151d 100644
  #include <capstone.h>
  
  #else
+diff --git a/plugins/api.c b/plugins/api.c
+index 8fa5a600ac..7d8f464b39 100644
+--- a/plugins/api.c
++++ b/plugins/api.c
+@@ -45,6 +45,7 @@
+ #include "exec/ram_addr.h"
+ #include "disas/disas.h"
+ #include "plugin.h"
++#include <stdio.h>
+ #ifndef CONFIG_USER_ONLY
+ #include "qemu/plugin-memory.h"
+ #include "hw/boards.h"
+@@ -469,7 +470,6 @@ GArray *qemu_plugin_get_registers(void)
+ int qemu_plugin_read_register(struct qemu_plugin_register *reg, GByteArray *buf)
+ {
+     g_assert(current_cpu);
+-
+     return gdb_read_register(current_cpu, buf, GPOINTER_TO_INT(reg));
+ }
+ 
+diff --git a/target/mips/cpu.c b/target/mips/cpu.c
+index 8d8f690a53..c927a76297 100644
+--- a/target/mips/cpu.c
++++ b/target/mips/cpu.c
+@@ -586,6 +586,14 @@ static void mips_cpu_class_init(ObjectClass *c, void *data)
+ #ifndef CONFIG_USER_ONLY
+     cc->sysemu_ops = &mips_sysemu_ops;
+ #endif
++
++    // TODO: register mips xml-feature based on fpu support
++#ifdef TARGET_MIPS64
++    cc->gdb_core_xml_file = "mips64-cpu.xml";
++#else
++    cc->gdb_core_xml_file = "mips-cpu.xml";
++#endif
++
+     cc->disas_set_info = mips_cpu_disas_set_info;
+     cc->gdb_num_core_regs = 73;
+     cc->gdb_stop_before_watchpoint = true;

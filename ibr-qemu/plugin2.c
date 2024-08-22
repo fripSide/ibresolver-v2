@@ -141,16 +141,21 @@ static int get_register_value_vcpu(int vcpu, const char *reg_name, GByteArray *r
 
 /*
 MPIS: 无法读到寄存器
+根据name读取寄存器是否合适？能否直接根据寄存器编号id来读？
+https://github.com/capstone-engine/capstone/blob/next/arch/Mips/MipsMapping.c#L202
+
+保证capstone和gdb-xml把寄存器排列顺序一致，比保证两边命名一致更难。
+所以还是继续用名称来找
 */
 static int get_register_value(const char *reg_name, GByteArray *reg_val) 
 {
 	g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
-	// printf("reg list: %d\n", reg_list->len);
+	// DEBUG_LOG("reg list: %d read_reg: %p\n", reg_list->len, qemu_plugin_read_register);
 	if (reg_list->len) {
 		for (int r = 0; r < reg_list->len; r++) {
 			qemu_plugin_reg_descriptor *rd = &g_array_index(
 				reg_list, qemu_plugin_reg_descriptor, r);
-			// printf("reg: %s %d\n", rd->name, r);
+			// DEBUG_LOG("reg: %s idx: %d handle: %d\n", rd->name, r, GPOINTER_TO_INT(rd->handle));
 			if (g_str_equal(rd->name, reg_name)) {
 				int res = qemu_plugin_read_register(rd->handle, reg_val);
 				g_assert(res > 0);
@@ -182,6 +187,7 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	uint8_t *insn_opcode = (uint8_t *) qemu_plugin_insn_data(insn);
 	const char *insn_disas = qemu_plugin_insn_disas(insn);
 	GString* insn_op;
+	uint64_t dest_val = 0;
 	int err_li = 0;
 	const char *err_str = "";
 
@@ -213,7 +219,7 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 		err_str = "read reg value failed";
 		goto failed;
 	}
-	uint64_t dest_val = 0;
+	
 	memcpy(&dest_val, reg_val->data, reg_val->len);
 
 	uint64_t caller_inst_offset = 0;
@@ -223,9 +229,15 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	bool res = covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
 	if (!res) {
 		err_li = __LINE__;
+		err_str = "covert caller vaddr failed";
 		goto failed;
 	}
 	res = covert_vaddr_to_offset(dest_val, &dest_inst_offset, dest_image_name);
+	if (!res) {
+		err_li = __LINE__;
+		err_str = "covert dest vaddr failed";
+		goto failed;
+	}
 
 	// 保持结构到 output.csv
 	DEBUG_LOG("reg name: %s ins: %s reg-val: %s val: %lx off: %lx sz: %d\n", reg_name, insn_disas, reg->str, insn_vaddr, dest_inst_offset, reg_sz);
@@ -234,7 +246,8 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	return;
 failed:
 	insn_op = dump_insn(insn);
-	DEBUG_LOG("Failed [%s] in line: %d reg: %s for insn: %s %s addr: %lx\n", err_str, err_li, reg_name, insn_op->str, insn_disas, insn_vaddr);
+	DEBUG_LOG("Failed [%s] in line: %d reg: %s for insn: %s %s ins-addr: %lx dest-addr: 0x%lx\n", err_str, err_li, reg_name, 
+		insn_op->str, insn_disas, insn_vaddr, dest_val);
 	// exit(-1);
 	g_string_free(insn_op, true);
 }

@@ -2,7 +2,7 @@ CC = clang
 CXX = clang++
 
 CXXFLAGS = -fPIC -std=c++17
-CFLAGS = -fPIC
+CFLAGS = -g -fPIC
 
 # MAKEDEPEND = makedepend -f- $(CPPFLAGS) $< | sed -n 's,^[^\#][^:]*: *\(..*\),$@: \1\n\1:,p' > $*.d
 

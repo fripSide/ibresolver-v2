@@ -12,12 +12,14 @@
 // #define CODE "\xe8\xa7\xfc\xff\xff"
 
 // aarch64
-#define CODE "\x40\x00\x3f\xd6" // blr x2
+// #define CODE "\x40\x00\x3f\xd6" // blr x2
 // #define CODE "\x58\x01\x00\x94" // bl #560
 // #define CODE "\xc1\x03\x00\xb4" // cbz x1, #0x78
 // #define CODE "\x09\xf8\x20\x03\x00\x00\x00\x00" // mipsel jalr $t9 
 // #define CODE "\x03\x20\xf8\x09"
 // #define CODE "\x7d\x89\x03\xa6" // mctrl r12
+
+#define CODE "\xe7\x80\x07\x00" // jalr a5
 
 csh handle;
 
@@ -69,6 +71,22 @@ static void dump_mips_op(cs_insn *insn)
 	}
 }
 
+static void dump_ins_riscv(cs_insn *insn)
+{
+	cs_riscv_op *cs_op;
+	printf("riscv op count: %d id: %d\n", insn->detail->riscv.op_count, insn->id);
+	for (size_t i = 0; i < insn->detail->riscv.op_count; i++) {
+		cs_op = &(insn->detail->riscv.operands[i]);
+		printf("op type: %d\n", cs_op->type);
+		if (cs_op->type == RISCV_OP_REG) {
+			printf("reg: %s %d\n", cs_reg_name(handle, cs_op->reg), cs_op->reg);
+		}
+		if (cs_op->type == RISCV_OP_IMM) {
+			printf("imm: 0x%"PRIx64"\n", cs_op->imm);
+		}
+	}
+}
+
 bool capstone_is_ib(cs_insn *ins)
 {
 	if (ins == NULL || ins->detail == NULL) {
@@ -95,7 +113,8 @@ bool capstone_is_ib(cs_insn *ins)
 		printf("----------------------\n");
 		printf("is call: %d\n", is_call);
 		// dump_mips_op(ins);
-		dump_ins_op_arm64(ins);
+		// dump_ins_op_arm64(ins);
+		dump_ins_riscv(ins);
 		printf("----------------------\n");
 	}
 
@@ -128,8 +147,11 @@ int main(void)
 	// CS_ARCH_AARCH64 CS_MODE_ARM
 	int arch = CS_ARCH_PPC;
 	arch = CS_ARCH_AARCH64;
+	arch = CS_ARCH_RISCV;
+
 	int mode = CS_MODE_64 | CS_MODE_BIG_ENDIAN;
 	mode = CS_MODE_ARM;
+	mode = CS_MODE_64 | CS_MODE_LITTLE_ENDIAN;
 
 	if (cs_open(arch, mode, &handle) != CS_ERR_OK)  {
 		printf("ERROR: Failed on cs_open()\n");
