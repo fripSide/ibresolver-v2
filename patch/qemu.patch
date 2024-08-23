@@ -1,12 +1,42 @@
 diff --git a/configs/targets/mips-linux-user.mak b/configs/targets/mips-linux-user.mak
-index b4569a9893..3b7ac17e29 100644
+index b4569a9893..3e846fccff 100644
 --- a/configs/targets/mips-linux-user.mak
 +++ b/configs/targets/mips-linux-user.mak
 @@ -3,3 +3,4 @@ TARGET_ABI_MIPSO32=y
  TARGET_SYSTBL_ABI=o32
  TARGET_SYSTBL=syscall_o32.tbl
  TARGET_BIG_ENDIAN=y
-+TARGET_XML_FILES= gdb-xml/mips-cpu.xml gdb-xml/mips64-cpu.xml
++TARGET_XML_FILES= gdb-xml/mips-cpu.xml
+\ No newline at end of file
+diff --git a/configs/targets/mips64-linux-user.mak b/configs/targets/mips64-linux-user.mak
+index d2ff509a11..92ffc73fb5 100644
+--- a/configs/targets/mips64-linux-user.mak
++++ b/configs/targets/mips64-linux-user.mak
+@@ -4,3 +4,4 @@ TARGET_BASE_ARCH=mips
+ TARGET_SYSTBL_ABI=n64
+ TARGET_SYSTBL=syscall_n64.tbl
+ TARGET_BIG_ENDIAN=y
++TARGET_XML_FILES= gdb-xml/mips64-cpu.xml
+\ No newline at end of file
+diff --git a/configs/targets/mips64el-linux-user.mak b/configs/targets/mips64el-linux-user.mak
+index f9efeec8ea..613c515914 100644
+--- a/configs/targets/mips64el-linux-user.mak
++++ b/configs/targets/mips64el-linux-user.mak
+@@ -3,3 +3,4 @@ TARGET_ABI_MIPSN64=y
+ TARGET_BASE_ARCH=mips
+ TARGET_SYSTBL_ABI=n64
+ TARGET_SYSTBL=syscall_n64.tbl
++TARGET_XML_FILES= gdb-xml/mips64-cpu.xml
+\ No newline at end of file
+diff --git a/configs/targets/mipsel-linux-user.mak b/configs/targets/mipsel-linux-user.mak
+index e8d7241d31..d53ed06775 100644
+--- a/configs/targets/mipsel-linux-user.mak
++++ b/configs/targets/mipsel-linux-user.mak
+@@ -2,3 +2,4 @@ TARGET_ARCH=mips
+ TARGET_ABI_MIPSO32=y
+ TARGET_SYSTBL_ABI=o32
+ TARGET_SYSTBL=syscall_o32.tbl
++TARGET_XML_FILES= gdb-xml/mips-cpu.xml
 \ No newline at end of file
 diff --git a/gdbstub/gdbstub.c b/gdbstub/gdbstub.c
 index 9c23d44baf..6a6e74eb7d 100644

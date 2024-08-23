@@ -101,16 +101,16 @@ bool capstone_get_reg_name(uint8_t *insn, size_t insn_len, char *reg_name)
 	if (count > 0) {
 		cs_insn *ins = &insn_cs[0];
 		int reg = capstone_get_insn_reg(ins);
-
+		if (reg < 0) {
+			cs_free(insn_cs, count);
+			return false;
+		}
 		if (current_arch == mips || current_arch == mipsel || current_arch == mips64 || current_arch == mips64el) {
 			strcpy(reg_name, mips_get_reg_name(reg));
 		} else {
-			if (reg >= 0) {
-				strcpy(reg_name, cs_reg_name(handle, reg));
-			}
+			
+			strcpy(reg_name, cs_reg_name(handle, reg));
 		}
-		
-		DEBUG_LOG("capstone reg-map: [%d] -> %s\n", reg, reg_name);
 		cs_free(insn_cs, count);
 		return true;
 	}
@@ -127,9 +127,9 @@ static void init_capstone()
 		[x86_64] = {CS_ARCH_X86, CS_MODE_64},
 		[mips] = {CS_ARCH_MIPS, CS_MODE_MIPS32  | CS_MODE_BIG_ENDIAN},
 		[mipsel] = {CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN},
-		[mips64] = {CS_ARCH_MIPS, CS_MODE_MIPS64  | CS_MODE_BIG_ENDIAN},
-		[mips64el] = {CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_BIG_ENDIAN},
-		[ppc64] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN},
+		[mips64] = {CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_BIG_ENDIAN},
+		[mips64el] = {CS_ARCH_MIPS, CS_MODE_MIPS64 | CS_MODE_LITTLE_ENDIAN},
+		[ppc64] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN},
 		[ppc64le] = {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN},
 		[riscv32] = {CS_ARCH_RISCV, CS_MODE_RISCV32 | CS_MODE_RISCVC},
 		[riscv64] = {CS_ARCH_RISCV, CS_MODE_RISCV64 | CS_MODE_RISCVC},
@@ -197,4 +197,9 @@ static int capstone_get_insn_reg(cs_insn *insn)
 	}
 
 	return -1;
+}
+
+bool is_big_endian(void)
+{
+	return current_arch == mips || current_arch == mips64;
 }

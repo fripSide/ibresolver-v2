@@ -100,3 +100,15 @@ bool covert_vaddr_to_offset(uint64_t inst_vaddr, uint64_t *offset, char *image_n
 	fclose(maps);
 	return false;
 }
+
+void copy_reg_value(uint64_t *dest_val, uint8_t *reg_val, int reg_sz, bool is_big_endian)
+{
+	if (is_big_endian) {
+		for (int i = 0; i < reg_sz; i++) {
+			((uint8_t *)dest_val)[i] = reg_val[reg_sz - 1 - i];
+		}
+	}
+	else {
+		memcpy(dest_val, reg_val, reg_sz);
+	}
+}

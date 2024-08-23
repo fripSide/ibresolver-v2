@@ -1,1 +1,16 @@
 callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
+0xb44, 0xc00, 0x120000b44, 0x120000c00, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x9ac, 0xdc0, 0x1200009ac, 0x120000dc0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x9d0, 0x7400, 0x1200009d0, 0x120007400, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x12b0, 0xf38, 0x1200012b0, 0x120000f38, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0xf70, 0xe98, 0x120000f70, 0x120000e98, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0xef0, 0xe10, 0x120000ef0, 0x120000e10, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0xf10, 0x13b0, 0x120000f10, 0x1200013b0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x2a40, 0x15e4, 0x120002a40, 0x1200015e4, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x2f98, 0x15e4, 0x120002f98, 0x1200015e4, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x3004, 0x15e4, 0x120003004, 0x1200015e4, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x42b4, 0x4090, 0x1200042b4, 0x120004090, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0xf90, 0xe98, 0x120000f90, 0x120000e98, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0xf90, 0x13b0, 0x120000f90, 0x1200013b0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0xfb0, 0xe98, 0x120000fb0, 0x120000e98, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf
+0x749c, 0xcd8, 0x12000749c, 0x120000cd8, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips64/1-fn-ptr.elf

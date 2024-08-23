@@ -60,6 +60,8 @@ static bool mips_is_indirect_branch(cs_insn *insn)
 		}
 	}
 
+	// DEBUG_LOG("is_call: %d\n", is_call);
+
 	if (is_call) {
 		if (insn->detail->mips.op_count == 1) {
 			cs_mips_op *op = &insn->detail->mips.operands[0];

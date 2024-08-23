@@ -220,7 +220,9 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 		goto failed;
 	}
 	
-	memcpy(&dest_val, reg_val->data, reg_val->len);
+	// 需要大小端转换
+	// memcpy(&dest_val, reg_val->data, reg_val->len);
+	copy_reg_value(&dest_val, reg_val->data, reg_val->len, is_big_endian());
 
 	uint64_t caller_inst_offset = 0;
 	uint64_t dest_inst_offset = 0;
@@ -307,7 +309,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
 	plugin_init(info);
 
 	// 初始化寄存器
-	// qemu_plugin_register_vcpu_init_cb(id, vcpu_init);
+	qemu_plugin_register_vcpu_init_cb(id, vcpu_init);
 
 	// 解析indirect branch  
 	qemu_plugin_register_vcpu_tb_trans_cb(id, vcpu_tb_trans);
