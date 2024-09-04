@@ -129,9 +129,10 @@ https://huhong789.github.io/papers/xia:deeptype.pdf
 
 ### Bug追踪
 
-1. 1-fn-ptr用例，只显示一个jmp  
+1. (done) 1-fn-ptr用例，只显示一个jmp  
 > 一条指令只触发了一次回调  
-
+解决：  
+qemu_plugin_register_vcpu_insn_exec_cb(insn)处不能传insn作为udata，tb的insn在执行阶段会free或者复用。  
 
 2. mips，无法读到寄存器  
 

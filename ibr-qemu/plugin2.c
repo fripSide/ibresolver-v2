@@ -1,8 +1,10 @@
 // qemu/include/qemu/qemu-plugin.h
 #include "glib.h"
 #include "qemu-plugin.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "utils.h"
 #include "debug.h"
@@ -24,6 +26,13 @@ typedef struct CPU {
 	GPtrArray *registers;
 } CPU;
 
+typedef struct CurrentInsn {
+	uint64_t vaddr;
+	uint8_t opcode[16];
+	size_t opcode_len;
+} CurrentInsn;
+// 保持每条jmp指令
+GPtrArray *current_insns;
 
 // output results
 FILE *output;
@@ -45,6 +54,7 @@ static void plugin_init(const qemu_info_t *info)
 
 	cpus = g_array_sized_new(true, true, sizeof(CPU),
 							info->system_emulation ? info->system.max_vcpus : 1);
+	current_insns = g_ptr_array_new();
 }
 
 static CPU *get_cpu(int vcpu_index)
@@ -71,6 +81,22 @@ static Register *init_vcpu_register(qemu_plugin_reg_descriptor *desc)
 	// g_assert(r > 0);
 
 	return reg;
+}
+
+static CurrentInsn *alloc_insn()
+{
+	CurrentInsn *cinsn = g_new0(CurrentInsn, 1);
+	g_ptr_array_add(current_insns, cinsn);
+	return cinsn;
+}
+
+static void free_all_insn(void)
+{
+	for (int i = 0; i < current_insns->len; i++) {
+		CurrentInsn *cinsn = g_ptr_array_index(current_insns, i);
+		g_free(cinsn);
+	}
+	g_ptr_array_free(current_insns, true);
 }
 
 static GPtrArray *registers_init(int vcpu_index)
@@ -181,22 +207,35 @@ static void print_insn(struct qemu_plugin_insn *insn)
 */
 static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 {
-	struct qemu_plugin_insn *insn = (struct qemu_plugin_insn *) udata;
-	uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
-	size_t insn_size = qemu_plugin_insn_size(insn);
-	uint8_t *insn_opcode = (uint8_t *) qemu_plugin_insn_data(insn);
-	const char *insn_disas = qemu_plugin_insn_disas(insn);
+	CurrentInsn *cinsn = (CurrentInsn *) udata;
+	// struct qemu_plugin_insn *insn = (struct qemu_plugin_insn *) udata;
+	// uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
+	// size_t insn_size = qemu_plugin_insn_size(insn);
+	// uint8_t *insn_opcode = (uint8_t *) qemu_plugin_insn_data(insn);
+	// const char *insn_disas = qemu_plugin_insn_disas(insn);
+	uint64_t insn_vaddr = cinsn->vaddr;
+	size_t insn_size = cinsn->opcode_len;
+	uint8_t *insn_opcode = cinsn->opcode;
+	// const char *insn_disas = qemu_plugin_insn_disas(insn);
+	const char *insn_disas = "";
 	GString* insn_op;
 	uint64_t dest_val = 0;
 	int err_li = 0;
 	const char *err_str = "";
+	uint64_t caller_inst_offset = 0;
+	uint64_t dest_inst_offset = 0;
+	char caller_image_name[512] = {0};
+	char dest_image_name[512] = {0};
 
 	/* 疑似 insn_cb cache有bug，libc.so没有注册回调，也能触发
 	*/
 	bool is_ib = is_indirect_branch(insn_opcode, insn_size);
-	// DEBUG_LOG("exec IB: %d %s\n", is_ib, insn_disas);
+	// g_autoptr(GString) insn_opstr = dump_insn(insn);
+	covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
+	DEBUG_LOG("exec %lx IB: %d %s\n", caller_inst_offset, is_ib, insn_disas);
 	if (!is_ib) {
-		// DEBUG_LOG("WARNING: Not IB: %s\n", insn_disas);
+		DEBUG_LOG("WARNING: Not IB: %s\n", insn_disas);
+		exit(-1);
 		return;
 	}
 
@@ -224,10 +263,6 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	// memcpy(&dest_val, reg_val->data, reg_val->len);
 	copy_reg_value(&dest_val, reg_val->data, reg_val->len, is_big_endian());
 
-	uint64_t caller_inst_offset = 0;
-	uint64_t dest_inst_offset = 0;
-	char caller_image_name[512] = {0};
-	char dest_image_name[512] = {0};
 	bool res = covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
 	if (!res) {
 		err_li = __LINE__;
@@ -247,11 +282,12 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 		insn_vaddr, dest_val, caller_image_name, dest_image_name);
 	return;
 failed:
-	insn_op = dump_insn(insn);
+	// insn_op = dump_insn(insn);
 	DEBUG_LOG("Failed [%s] in line: %d reg: %s for insn: %s %s ins-addr: %lx dest-addr: 0x%lx\n", err_str, err_li, reg_name, 
-		insn_op->str, insn_disas, insn_vaddr, dest_val);
-	// exit(-1);
+		"", insn_disas, insn_vaddr, dest_val);
+	exit(-1);
 	g_string_free(insn_op, true);
+	return;
 }
 
 static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
@@ -261,7 +297,6 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 	for (int i = 0; i < num_insns; i++) {
 		struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
 		uint8_t *insn_data = (uint8_t *) qemu_plugin_insn_data(insn);
-
 		// print_insn(insn);
 
 		bool is_ib = is_indirect_branch(insn_data, qemu_plugin_insn_size(insn));
@@ -269,15 +304,27 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 
 		if (is_ib) {
 			uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
-			DEBUG_LOG("IB: 0x%lx op: %s ins: %s\n", insn_vaddr, insn_op->str, qemu_plugin_insn_disas(insn));
+			CurrentInsn *cinsn = alloc_insn();
+			cinsn->vaddr = insn_vaddr;
+			cinsn->opcode_len = qemu_plugin_insn_size(insn);
+			memcpy(cinsn->opcode, insn_data, cinsn->opcode_len);
+			uint64_t caller_inst_offset = 0;
+			uint64_t dest_inst_offset = 0;
+			char caller_image_name[512] = {0};
+			char dest_image_name[512] = {0};
+			covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
+			DEBUG_LOG("add cb at IB: %lx op: %s ins: %s\n", caller_inst_offset, insn_op->str, qemu_plugin_insn_disas(insn));
+			/* 这里的callback userdata，不能传指令引用，会被释放reuse
+			*/
 			qemu_plugin_register_vcpu_insn_exec_cb(insn, vcpu_insn_exec_with_regs,
-				QEMU_PLUGIN_CB_R_REGS, (void *) insn);
+				QEMU_PLUGIN_CB_R_REGS, (void *) cinsn);
 		}
 	}
 }
 
 static void plugin_exit(qemu_plugin_id_t id, void *p)
 {
+	free_all_insn();
 	fclose(output);
 }
 
