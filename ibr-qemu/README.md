@@ -134,7 +134,7 @@ https://huhong789.github.io/papers/xia:deeptype.pdf
 解决：  
 qemu_plugin_register_vcpu_insn_exec_cb(insn)处不能传insn作为udata，tb的insn在执行阶段会free或者复用。  
 
-2. mips，无法读到寄存器  
+2. (done) mips，无法读到寄存器  
 
 3. (done) capstone，不支持riscv  
 解决：使用qemu-next中自带的capstone 5.0  
@@ -142,8 +142,15 @@ qemu_plugin_register_vcpu_insn_exec_cb(insn)处不能传insn作为udata，tb的i
 4. riscv，qemu没法读到s0寄存器  
 
 
+5. ppc，无法解析dest addr  
+
+6. (done) arm没有读到blx指令
+
+
 ### 后续优化  
 
 1. 将qemu mips读寄存器支持提交到upstream  
 需要将xml都复制过去：https://android.googlesource.com/toolchain/gdb/+/refs/heads/main/gdb-9.2/gdb/features  
 并且像arm一样实现根据特性判断，来加载不同寄存器配置: arm_cpu_register_gdb_regs_for_features  
+
+2. 优化capstone编译，不要使用相对路径，直接install到系统，使用系统路径  

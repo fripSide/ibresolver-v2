@@ -5,4 +5,8 @@ callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
 0x8e4, 0x534, 0x4008e4, 0x400534, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
 0x4e8, 0x440, 0x4004e8, 0x400440, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
 0x3a40, 0x37f0, 0x403a40, 0x4037f0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
+0x4e8, 0x440, 0x4004e8, 0x400440, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
+0x3a40, 0x45f0, 0x403a40, 0x4045f0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
+0x4e8, 0x478, 0x4004e8, 0x400478, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
+0x3a40, 0x45f0, 0x403a40, 0x4045f0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf
 0x621c, 0x30c, 0x40621c, 0x40030c, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/mips/1-fn-ptr.elf

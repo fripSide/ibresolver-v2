@@ -11,6 +11,9 @@
 // #define CODE "\xff\xd5"
 // #define CODE "\xe8\xa7\xfc\xff\xff"
 
+// arm32
+#define CODE "\x33\xff\x2f\xe1"
+
 // aarch64
 // #define CODE "\x40\x00\x3f\xd6" // blr x2
 // #define CODE "\x58\x01\x00\x94" // bl #560
@@ -19,7 +22,7 @@
 // #define CODE "\x03\x20\xf8\x09"
 // #define CODE "\x7d\x89\x03\xa6" // mctrl r12
 
-#define CODE "\xe7\x80\x07\x00" // jalr a5
+// #define CODE "\xe7\x80\x07\x00" // jalr a5
 
 csh handle;
 
@@ -52,6 +55,16 @@ static void dump_x86_op(cs_insn *insn)
 		if (cs_op->type == X86_OP_IMM) {
 			printf("imm: 0x%"PRIx64"\n", cs_op->imm);
 		}
+	}
+}
+
+static void dump_arm_op(cs_insn *insn)
+{
+	cs_arm_op *cs_op;
+	printf("arm op count: %d\n", insn->detail->arm.op_count);
+	for (size_t i = 0; i < insn->detail->arm.op_count; i++) {
+		cs_op = &(insn->detail->arm.operands[i]);
+		printf("op type: %d\n", cs_op->type);
 	}
 }
 
@@ -112,16 +125,18 @@ bool capstone_is_ib(cs_insn *ins)
 	if (is_call) {
 		printf("----------------------\n");
 		printf("is call: %d\n", is_call);
+		
 		// dump_mips_op(ins);
 		// dump_ins_op_arm64(ins);
-		dump_ins_riscv(ins);
+		// dump_ins_riscv(ins);
 		printf("----------------------\n");
 	}
 
 	if (is_ib) {
 		printf("----------------------\n");
 		printf("is branch: %d\n", is_ib);
-		dump_ins_op_arm64(ins);
+		dump_arm_op(ins);
+		// dump_ins_op_arm64(ins);
 		// dump_mips_op(ins);
 		printf("----------------------\n");
 	}
@@ -148,10 +163,11 @@ int main(void)
 	int arch = CS_ARCH_PPC;
 	arch = CS_ARCH_AARCH64;
 	arch = CS_ARCH_RISCV;
+	arch = CS_ARCH_ARM;
 
 	int mode = CS_MODE_64 | CS_MODE_BIG_ENDIAN;
 	mode = CS_MODE_ARM;
-	mode = CS_MODE_64 | CS_MODE_LITTLE_ENDIAN;
+	// mode = CS_MODE_64 | CS_MODE_LITTLE_ENDIAN;
 
 	if (cs_open(arch, mode, &handle) != CS_ERR_OK)  {
 		printf("ERROR: Failed on cs_open()\n");

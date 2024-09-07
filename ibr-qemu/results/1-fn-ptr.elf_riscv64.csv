@@ -6,4 +6,12 @@ callsite offset,dest offset,callsite vaddr,dest vaddr,callsite ELF,dest ELF
 0x718, 0x71c, 0x10718, 0x1071c, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
 0x1e48, 0x2070, 0x11e48, 0x12070, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
 0x2da0, 0x2bec, 0x12da0, 0x12bec, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x30c, 0x250, 0x1030c, 0x10250, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x718, 0x71c, 0x10718, 0x1071c, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x1e48, 0x2070, 0x11e48, 0x12070, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x2da0, 0x358c, 0x12da0, 0x1358c, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x30c, 0x290, 0x1030c, 0x10290, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x718, 0x71c, 0x10718, 0x1071c, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x1e48, 0x2070, 0x11e48, 0x12070, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
+0x2da0, 0x358c, 0x12da0, 0x1358c, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf
 0x68c, 0x1d0, 0x1068c, 0x101d0, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf, /home/hy/work/qemu-dev/ibresolver-v2/tests/out/riscv64/1-fn-ptr.elf

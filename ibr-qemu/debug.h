@@ -36,6 +36,16 @@ static GString* dump_insn(struct qemu_plugin_insn * insn)
 }
 
 
+static void print_insn(struct qemu_plugin_insn *insn)
+{
+	uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
+	g_autoptr(GString) insn_op = dump_insn(insn);
+	const char *insn_disas = qemu_plugin_insn_disas(insn);
+	g_autofree gchar *output = g_strdup_printf("0x%"PRIx64", %s, \"disa: %s\"",
+									insn_vaddr, insn_op->str, insn_disas);
+	DEBUG_LOG("insn: -> %s\n", output);
+}
+
 #else // no DEBUG
 
 #define DEBUG_LOG(fmt, ...)	\

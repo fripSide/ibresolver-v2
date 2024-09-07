@@ -1,5 +1,5 @@
 
-### ibr-qemu  
+## ibr-qemu  
 基于qemu插件来实现indirect branch解析。  
 
 思路1：基于qemu-user执行程序，在跳转时记录跳转目标BBlock地址。  
@@ -9,11 +9,11 @@
 
 [详细说明](ibr-qemu/README.md)
 
-### ibr-fe
-基于force execution来执行每一个分支。  
+### 构建方法  
 
-[详细说明](ibr-fe/README.md)
 
-### Indirect branch（间接跳转）  
+### 单元测试  
+
+## Indirect branch（间接跳转）  
 
 [详细说明](ib.md)

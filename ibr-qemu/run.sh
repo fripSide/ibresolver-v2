@@ -6,7 +6,7 @@ BIN="1-fn-ptr.elf"
 
 
 ARCH="x86_64"
-# ARCH="arm"
+ARCH="arm"
 # ARCH="aarch64"
 # ARCH="mips"
 # ARCH="mipsel"

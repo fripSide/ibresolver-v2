@@ -1,6 +1,8 @@
 // qemu/include/qemu/qemu-plugin.h
 #include "glib.h"
 #include "qemu-plugin.h"
+#include <assert.h>
+#include <glob.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -20,26 +22,29 @@ typedef struct {
 } Register;
 
 typedef struct CPU {
-	/* Store last executed instruction on each vCPU as a GString */
-	GString *last_exec;
 	/* Ptr array of Register */
 	GPtrArray *registers;
 } CPU;
 
 typedef struct CurrentInsn {
 	uint64_t vaddr;
-	uint8_t opcode[16];
+	uint8_t opcode[8];
 	size_t opcode_len;
+	char reg_name[16];
 } CurrentInsn;
-// 保持每条jmp指令
-GPtrArray *current_insns;
+
 
 // output results
 FILE *output;
 
+// 保持每个vcpu的寄存器
 static GArray *cpus;
 static GRWLock expand_array_lock;
 static GMutex add_reg_name_lock;
+
+// 保持每条jmp指令
+static GPtrArray *current_insns;
+static GRWLock add_insns_lock;
 
 
 static void plugin_init(const qemu_info_t *info) 
@@ -52,6 +57,9 @@ static void plugin_init(const qemu_info_t *info)
 		info->system.smp_vcpus,
 		info->system.max_vcpus);
 
+	/* qemu-user下，只有一个vcpu，是不需要锁和多个数组的。
+		为了后面兼容qemu-system，针对每个vcpu都分配单独的寄存器。
+	*/
 	cpus = g_array_sized_new(true, true, sizeof(CPU),
 							info->system_emulation ? info->system.max_vcpus : 1);
 	current_insns = g_ptr_array_new();
@@ -76,17 +84,15 @@ static Register *init_vcpu_register(qemu_plugin_reg_descriptor *desc)
 	reg->handle = desc->handle;
 	reg->name = g_intern_string(lower);
 
-	/* read the initial value */
-	// r = qemu_plugin_read_register(reg->handle, reg->last);
-	// g_assert(r > 0);
-
 	return reg;
 }
 
 static CurrentInsn *alloc_insn()
 {
 	CurrentInsn *cinsn = g_new0(CurrentInsn, 1);
+	g_rw_lock_writer_lock(&add_insns_lock);
 	g_ptr_array_add(current_insns, cinsn);
+	g_rw_lock_writer_unlock(&add_insns_lock);
 	return cinsn;
 }
 
@@ -104,7 +110,7 @@ static GPtrArray *registers_init(int vcpu_index)
 	g_autoptr(GPtrArray) registers = g_ptr_array_new();
 	g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
 
-	printf("init n register: %d\n", reg_list->len);
+	DEBUG_LOG("init n register: %d\n", reg_list->len);
 
 	if (reg_list->len) {
 		/* TODO: 只需要追踪jmp/call用到的寄存器
@@ -139,13 +145,17 @@ static void vcpu_init(qemu_plugin_id_t id, unsigned int vcpu_index)
 	printf("init cpu: %u\n", vcpu_index);
 }
 
+
 /*
-	根据寄存器名称，读寄存器的值：
-	https://github.com/qemu/qemu/blob/master/include/qemu/qemu-plugin.h#L868
+MPIS: 无法读到寄存器
+根据name读取寄存器是否合适？能否直接根据寄存器编号id来读？
+https://github.com/capstone-engine/capstone/blob/next/arch/Mips/MipsMapping.c#L202
+
+保证capstone和gdb-xml把寄存器排列顺序一致，比保证两边命名一致更难。
+所以还是继续用名称来找
 */
 static int get_register_value_vcpu(int vcpu, const char *reg_name, GByteArray *reg_val) 
 {
-	// g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
 	CPU *cpu = get_cpu(vcpu);
 	GPtrArray* reg_list = cpu->registers; 
 	// printf("reg list: %d\n", reg_list->len);
@@ -165,60 +175,12 @@ static int get_register_value_vcpu(int vcpu, const char *reg_name, GByteArray *r
 	return 0;
 }
 
-/*
-MPIS: 无法读到寄存器
-根据name读取寄存器是否合适？能否直接根据寄存器编号id来读？
-https://github.com/capstone-engine/capstone/blob/next/arch/Mips/MipsMapping.c#L202
-
-保证capstone和gdb-xml把寄存器排列顺序一致，比保证两边命名一致更难。
-所以还是继续用名称来找
-*/
-static int get_register_value(const char *reg_name, GByteArray *reg_val) 
-{
-	g_autoptr(GArray) reg_list = qemu_plugin_get_registers();
-	// DEBUG_LOG("reg list: %d read_reg: %p\n", reg_list->len, qemu_plugin_read_register);
-	if (reg_list->len) {
-		for (int r = 0; r < reg_list->len; r++) {
-			qemu_plugin_reg_descriptor *rd = &g_array_index(
-				reg_list, qemu_plugin_reg_descriptor, r);
-			// DEBUG_LOG("reg: %s idx: %d handle: %d\n", rd->name, r, GPOINTER_TO_INT(rd->handle));
-			if (g_str_equal(rd->name, reg_name)) {
-				int res = qemu_plugin_read_register(rd->handle, reg_val);
-				g_assert(res > 0);
-				return res;
-			}
-		}
-	}
-	return 0;
-}
-
-static void print_insn(struct qemu_plugin_insn *insn)
-{
-	uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
-	uint32_t insn_opcode;
-	insn_opcode = *((uint32_t *)qemu_plugin_insn_data(insn));
-	const char *insn_disas = qemu_plugin_insn_disas(insn);
-	char *output = g_strdup_printf("0x%"PRIx64", 0x%"PRIx32", \"disa: %s\"",
-									insn_vaddr, insn_opcode, insn_disas);
-	DEBUG_LOG("insn: -> %s\n", output);
-}
-
 /* 直接从当前指令解析出跳转地址
 */
 static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 {
 	CurrentInsn *cinsn = (CurrentInsn *) udata;
-	// struct qemu_plugin_insn *insn = (struct qemu_plugin_insn *) udata;
-	// uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
-	// size_t insn_size = qemu_plugin_insn_size(insn);
-	// uint8_t *insn_opcode = (uint8_t *) qemu_plugin_insn_data(insn);
-	// const char *insn_disas = qemu_plugin_insn_disas(insn);
 	uint64_t insn_vaddr = cinsn->vaddr;
-	size_t insn_size = cinsn->opcode_len;
-	uint8_t *insn_opcode = cinsn->opcode;
-	// const char *insn_disas = qemu_plugin_insn_disas(insn);
-	const char *insn_disas = "";
-	GString* insn_op;
 	uint64_t dest_val = 0;
 	int err_li = 0;
 	const char *err_str = "";
@@ -227,32 +189,9 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	char caller_image_name[512] = {0};
 	char dest_image_name[512] = {0};
 
-	/* 疑似 insn_cb cache有bug，libc.so没有注册回调，也能触发
-	*/
-	bool is_ib = is_indirect_branch(insn_opcode, insn_size);
-	// g_autoptr(GString) insn_opstr = dump_insn(insn);
-	covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
-	DEBUG_LOG("exec %lx IB: %d %s\n", caller_inst_offset, is_ib, insn_disas);
-	if (!is_ib) {
-		DEBUG_LOG("WARNING: Not IB: %s\n", insn_disas);
-		exit(-1);
-		return;
-	}
-
-	// 1. 解析指令，通过名称找到对应的reg
-	char reg_name[16] = {0};
-	g_autoptr(GString) reg = g_string_new(NULL);
-	bool suc = capstone_get_reg_name(insn_opcode, insn_size, reg_name);
-	// DEBUG_LOG("reg name: %s\n", reg_name);
-	if (!suc) {
-		err_li = __LINE__;
-		err_str = "capstone_get_reg_name failed";
-		goto failed;
-	}
 
 	GByteArray *reg_val = g_byte_array_new();
-	// int reg_sz = get_register_value_vcpu(cpu_index, reg_name, reg_val);
-	int reg_sz = get_register_value(reg_name, reg_val);
+	int reg_sz = get_register_value_vcpu(cpu_index, cinsn->reg_name, reg_val);
 	if (reg_sz <= 0) {
 		err_li = __LINE__;
 		err_str = "read reg value failed";
@@ -260,7 +199,6 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	}
 	
 	// 需要大小端转换
-	// memcpy(&dest_val, reg_val->data, reg_val->len);
 	copy_reg_value(&dest_val, reg_val->data, reg_val->len, is_big_endian());
 
 	bool res = covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
@@ -277,16 +215,13 @@ static void vcpu_insn_exec_with_regs(unsigned int cpu_index, void *udata)
 	}
 
 	// 保持结构到 output.csv
-	DEBUG_LOG("reg name: %s ins: %s reg-val: %s val: %lx off: %lx sz: %d\n", reg_name, insn_disas, reg->str, insn_vaddr, dest_inst_offset, reg_sz);
+	DEBUG_LOG("\tread reg -> name: %s val: %lx addr: %lx off: %lx sz: %d\n", cinsn->reg_name, dest_val, insn_vaddr, dest_inst_offset, reg_sz);
 	fprintf(output, "0x%lx, 0x%lx, 0x%lx, 0x%lx, %s, %s\n", caller_inst_offset, dest_inst_offset, 
 		insn_vaddr, dest_val, caller_image_name, dest_image_name);
 	return;
 failed:
-	// insn_op = dump_insn(insn);
-	DEBUG_LOG("Failed [%s] in line: %d reg: %s for insn: %s %s ins-addr: %lx dest-addr: 0x%lx\n", err_str, err_li, reg_name, 
-		"", insn_disas, insn_vaddr, dest_val);
+	DEBUG_LOG("\tFailed [%s] in line: %d reg: %s ins-addr: %lx dest-addr: 0x%lx\n", err_str, err_li, cinsn->reg_name, insn_vaddr, dest_val);
 	exit(-1);
-	g_string_free(insn_op, true);
 	return;
 }
 
@@ -296,25 +231,30 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 
 	for (int i = 0; i < num_insns; i++) {
 		struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
-		uint8_t *insn_data = (uint8_t *) qemu_plugin_insn_data(insn);
+		uint8_t *insn_opcode = (uint8_t *) qemu_plugin_insn_data(insn);
+		size_t insn_size = qemu_plugin_insn_size(insn);
 		// print_insn(insn);
 
-		bool is_ib = is_indirect_branch(insn_data, qemu_plugin_insn_size(insn));
-		g_autoptr(GString) insn_op = dump_insn(insn);
+		bool is_ib = is_indirect_branch(insn_opcode, insn_size);
 
+		/* 如果是间接跳转，就保持读取的寄存器
+		*/
 		if (is_ib) {
 			uint64_t insn_vaddr = qemu_plugin_insn_vaddr(insn);
 			CurrentInsn *cinsn = alloc_insn();
 			cinsn->vaddr = insn_vaddr;
-			cinsn->opcode_len = qemu_plugin_insn_size(insn);
-			memcpy(cinsn->opcode, insn_data, cinsn->opcode_len);
-			uint64_t caller_inst_offset = 0;
-			uint64_t dest_inst_offset = 0;
-			char caller_image_name[512] = {0};
-			char dest_image_name[512] = {0};
-			covert_vaddr_to_offset(insn_vaddr, &caller_inst_offset, caller_image_name);
-			DEBUG_LOG("add cb at IB: %lx op: %s ins: %s\n", caller_inst_offset, insn_op->str, qemu_plugin_insn_disas(insn));
-			/* 这里的callback userdata，不能传指令引用，会被释放reuse
+
+			bool suc = capstone_get_reg_name(insn_opcode, insn_size, cinsn->reg_name);
+
+			if (!suc) {
+				DEBUG_LOG("\t[WARN] capstone_get_reg_name failed\n");
+				continue;
+			}
+
+			DEBUG_LOG("IB: %lx\n\t", insn_vaddr);
+			print_insn(insn);
+
+			/* 这里的callback userdata，不能传指令引用，会被释放reuse。因此需要自定义结构体cinsn，等运行完再释放
 			*/
 			qemu_plugin_register_vcpu_insn_exec_cb(insn, vcpu_insn_exec_with_regs,
 				QEMU_PLUGIN_CB_R_REGS, (void *) cinsn);

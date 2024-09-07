@@ -9,10 +9,12 @@ static bool arm_is_indirect_branch(cs_insn *insn)
 {
 	/* all jump instructions (conditional+direct+indirect jumps)
 	* jmp, cmp and jmp b/br/bl/blr/cbnz/cbz
+	* call blx
 	*/
 	bool is_jump = false;
 	for (size_t i = 0; i < insn->detail->groups_count; i++) {
-		if (insn->detail->groups[i] == CS_GRP_JUMP || insn->detail->groups[i] == CS_GRP_BRANCH_RELATIVE) {
+		if (insn->detail->groups[i] == CS_GRP_CALL || insn->detail->groups[i] == CS_GRP_JUMP 
+			|| insn->detail->groups[i] == CS_GRP_BRANCH_RELATIVE) {
 			is_jump = true;
 		}
 	}
